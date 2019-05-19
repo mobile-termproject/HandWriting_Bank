@@ -1,9 +1,15 @@
 package org.androidtown.mobile_term;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,14 +31,16 @@ public class MainActivity extends AppCompatActivity
     GridViewAdapter adapter;
     GridView gridView;
 
+    private static final int SDCARD_PERMISSION = 1,
+            FILE_PICKER_CODE = 3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        data.add(new Book("dgjlks",R.drawable.book));
-
         init();
+        checkStoragePermission();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -128,10 +136,33 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent myIntent = new Intent(MainActivity.this,FileList.class);
-                myIntent.putExtra("name", data.get(position).getName());
-                startActivity(myIntent);
+                myIntent.putExtra("location", "/"+data.get(position).getName()+"/");
+                startActivityForResult(myIntent, FILE_PICKER_CODE);
             }
         });
         gridView.setAdapter(adapter);
+    }
+
+    /*permission 보내는 코드 */
+    void checkStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        SDCARD_PERMISSION);
+            }
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == FILE_PICKER_CODE) {
+            if (resultCode == Activity.RESULT_OK && intent.hasExtra("data")) {
+
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+            }
+        }
     }
 }

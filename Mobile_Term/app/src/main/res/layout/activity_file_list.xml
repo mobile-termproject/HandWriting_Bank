@@ -10,6 +10,6 @@
         layout="@layout/app_bar_list"
         android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize" />
+        android:layout_height="match_parent" />
 
 </RelativeLayout>
