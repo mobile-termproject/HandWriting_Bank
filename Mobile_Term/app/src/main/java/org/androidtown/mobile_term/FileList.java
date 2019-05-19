@@ -392,6 +392,9 @@ public class FileList extends AppCompatActivity {
         Toolbar toolbar2 = (Toolbar) findViewById(R.id.toolbar2);
         spinner = (Spinner)findViewById(R.id.spinner_nav);
 
+        Intent myintent = getIntent();
+        FolderName = myintent.getExtras().getString("name");
+
         setSupportActionBar(toolbar2);
 
         getSupportActionBar().setDisplayShowTitleEnabled(false); //기존 타이틀은 안보여주게

@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "955122216724",
+    "firebase_url": "https://mobileterm-8420c.firebaseio.com",
+    "project_id": "mobileterm-8420c",
+    "storage_bucket": "mobileterm-8420c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:955122216724:android:94aa522fea23e12a",
+        "android_client_info": {
+          "package_name": "org.androidtown.mobile_term"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "955122216724-le5gll9cd7dqkb0ghpig3freaoa0i7k7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.androidtown.mobile_term",
+            "certificate_hash": "d33835f10dacbe9cac702d0720b5efad2c855f74"
+          }
+        },
+        {
+          "client_id": "955122216724-9ngtta7hk2k09iidqai1fm76m1m9pqsr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.androidtown.mobile_term",
+            "certificate_hash": "da75863d250c0263ec7bd755e0303820e73ee474"
+          }
+        },
+        {
+          "client_id": "955122216724-q4rm89tcl2f2hb3727pgcf31km3kv6ri.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkivOFAtLDQqZURbcef6a_ZGm5pU6H1dY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "955122216724-q4rm89tcl2f2hb3727pgcf31km3kv6ri.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
