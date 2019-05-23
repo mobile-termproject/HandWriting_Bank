@@ -19,6 +19,8 @@
         android:layout_marginTop="15dp"
         android:layout_gravity="center"
         android:textSize="20dp"
-        android:text="책 이름"/>
+        android:text="책 이름"
+        android:ellipsize="end"
+        android:singleLine="true"/>
 
 </LinearLayout>

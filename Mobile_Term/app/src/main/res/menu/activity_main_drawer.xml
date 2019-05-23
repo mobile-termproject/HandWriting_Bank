@@ -20,6 +20,11 @@
             android:id="@+id/app_use"
             android:icon="@drawable/ic_menu_manage"
             android:title="어플 사용법" />
+
+        <item
+            android:id="@+id/gachon_login"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="가천대 로그인" />
     </group>
 
     <item android:title="기타 등등">

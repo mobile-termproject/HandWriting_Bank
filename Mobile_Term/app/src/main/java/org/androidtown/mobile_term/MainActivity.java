@@ -32,6 +32,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -52,6 +53,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,8 +84,7 @@ public class MainActivity extends AppCompatActivity
     private Integer[] colors =
             {R.drawable.red, R.drawable.orange, R.drawable.yellow,R.drawable.green,R.drawable.blue,R.drawable.purple,R.drawable.pink,R.drawable.black};
 
-    private static final int SDCARD_PERMISSION = 1,
-            FILE_PICKER_CODE = 3;
+    private static final int FILE_PICKER_CODE = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +95,6 @@ public class MainActivity extends AppCompatActivity
         user = mAuth.getCurrentUser(); //현재 로그인한 유저
 
         init();
-        checkStoragePermission();
         navisetting();
         initDatabase();
 
@@ -144,6 +147,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view); // 네이게이션바 세팅
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override
@@ -216,15 +220,34 @@ public class MainActivity extends AppCompatActivity
             alert_confirm.setMessage("정말 계정을 삭제 할까요?").setCancelable(false).setPositiveButton("확인", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            /*FirebaseUser users = FirebaseAuth.getInstance().getCurrentUser();
+                            FirebaseUser users = FirebaseAuth.getInstance().getCurrentUser();
                             users.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            Toast.makeText(MainActivity.this, "계정이 삭제 되었습니다.", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                        }
-                                    });*/
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Toast.makeText(MainActivity.this, "계정이 삭제 되었습니다.", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                    startActivity(new Intent(getApplicationContext(), SplashLogin.class));
+                                }
+                            });
+
+                            String tr = user.getEmail();
+                            int get = tr.indexOf("@");
+                            tr = tr.substring(0,get);
+
+                            databaseReference = firebaseDatabase.getReference(tr);
+                            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for(DataSnapshot snapshot:dataSnapshot.getChildren()) {
+                                        snapshot.getRef().removeValue();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    ;
+                                }
+                            });
                         }
                     }
             );
@@ -235,6 +258,9 @@ public class MainActivity extends AppCompatActivity
                 }
             });
             alert_confirm.show();
+        } else if (id == R.id.gachon_login) { //가천대 로그인
+            Intent myIntent = new Intent(MainActivity.this,Gachon_Login.class);
+            startActivity(myIntent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -310,20 +336,6 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
         });
-    }
-
-    /*permission 보내는 코드 */
-    void checkStoragePermission() { //스플레쉬 화면으로 옮기는게 좋을듯
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        SDCARD_PERMISSION);
-            }
-        }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {

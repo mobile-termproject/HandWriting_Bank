@@ -1,10 +1,14 @@
 package org.androidtown.mobile_term;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -49,7 +53,8 @@ public class SplashLogin extends AppCompatActivity implements GoogleApiClient.On
 
     ImageView splash;
     RelativeLayout login;
-    Button grid; // 이건 그냥 가천대 버튼 누르면 메인으로 이동하게 해놓은 것
+
+    private static final int SDCARD_PERMISSION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,17 +87,9 @@ public class SplashLogin extends AppCompatActivity implements GoogleApiClient.On
         Google_Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                checkStoragePermission();
                 Intent intent = googleSignInClient.getSignInIntent();
                 startActivityForResult(intent,RC_SIGN_IN);
-            }
-        });
-
-        grid = (Button)findViewById(R.id.btnLogin); // 나중에 가천대 로그인 추가하면 지워야함
-        grid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent myIntent = new Intent(SplashLogin.this,MainActivity.class);
-                startActivity(myIntent);
             }
         });
     }
@@ -151,5 +148,19 @@ public class SplashLogin extends AppCompatActivity implements GoogleApiClient.On
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         ;
+    }
+
+    /*permission 보내는 코드 */
+    void checkStoragePermission() { //스플레쉬 화면으로 옮기는게 좋을듯
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        SDCARD_PERMISSION);
+            }
+        }
     }
 }
