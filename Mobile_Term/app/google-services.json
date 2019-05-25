@@ -31,6 +31,22 @@
           }
         },
         {
+          "client_id": "955122216724-3me4vddcb7gvqvpvgt4kpgrdbqqd9t9l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.androidtown.mobile_term",
+            "certificate_hash": "898f32b890b8bf5a672685a8f9d266dd1cfd918b"
+          }
+        },
+        {
+          "client_id": "955122216724-3flk863r5dj3fp6b2qouudfmbb20g9ck.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.androidtown.mobile_term",
+            "certificate_hash": "de0773f69aefe587fd7c11fd9c9e59ab9d92d481"
+          }
+        },
+        {
           "client_id": "955122216724-q4rm89tcl2f2hb3727pgcf31km3kv6ri.apps.googleusercontent.com",
           "client_type": 3
         }
