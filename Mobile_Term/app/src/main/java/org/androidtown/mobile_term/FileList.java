@@ -1,14 +1,22 @@
 package org.androidtown.mobile_term;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 public class FileList extends AppCompatActivity {
 
@@ -43,6 +52,7 @@ public class FileList extends AppCompatActivity {
     boolean pickFiles;
     Intent receivedIntent;
     String bookfolderName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,8 +97,8 @@ public class FileList extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:{ //toolbar의 back키 눌렀을 때 동작
+        switch (item.getItemId()) {
+            case android.R.id.home: { //toolbar의 back키 눌렀을 때 동작
                 finish();
                 return true;
             }
@@ -140,9 +150,10 @@ public class FileList extends AppCompatActivity {
                     BookPojo bookPojo = new BookPojo(currentFile.getName(), false);
                     bookPojo.setDay(simpleDateForma.format(lastModifiedDat));
                     bookPojo.setSize(formatFileSize(L));
+                    bookPojo.setLocation(location);
                     if (currentFile.getName().contains("pdf")) {
                         pdfList.add(bookPojo);
-                    } else if (currentFile.getName().contains("mp3")) {
+                    } else if (currentFile.getName().contains("mp3")||currentFile.getName().contains("m4a")) {
                         mp3List.add(bookPojo);
                     }
                     filesList.add(bookPojo);
@@ -192,24 +203,24 @@ public class FileList extends AppCompatActivity {
     /*pdf, mp3 따로 정렬할때 건드릴 코드 fdolerAdaper 주석부분 확인*/
     void showList() {
         try {
-            if(spinnerset.equals("전체"))
+            if (spinnerset.equals("전체"))
                 FolderAdapter = new BookAdapter(this, folderAndFileList);
-            else if(spinnerset.equals("PDF"))
-                 FolderAdapter = new BookAdapter(this, pdfList);
-            else if(spinnerset.equals("MP3"))
-                 FolderAdapter = new BookAdapter(this, mp3List);
+            else if (spinnerset.equals("PDF"))
+                FolderAdapter = new BookAdapter(this, pdfList);
+            else if (spinnerset.equals("MP3"))
+                FolderAdapter = new BookAdapter(this, mp3List);
             listView = (ListView) findViewById(R.id.book_listView);
             listView.setAdapter(FolderAdapter);
             //이부분은 나중에 pdf여는 코드
-            /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
-                    FolderAdapter.setIsVisible(isVisible);
-                    FolderAdapter.notifyDataSetChanged();
+                    //    FolderAdapter.setIsVisible(isVisible);
+                    //   FolderAdapter.notifyDataSetChanged();
                     listClick(position);
                 }
-            });*/
+            });
             listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(final AdapterView<?> parent, View view, final int position, long id) {
@@ -236,7 +247,7 @@ public class FileList extends AppCompatActivity {
                         }
                     });
                     popup.show();
-                    return false;
+                    return true;
                 }
             });
         } catch (Exception e) {
@@ -245,15 +256,51 @@ public class FileList extends AppCompatActivity {
     }
 
     void listClick(int position) {
-        if (pickFiles && !folderAndFileList.get(position).isFolder()) {
-            String data = location + File.separator + folderAndFileList.get(position).getName();
-            receivedIntent.putExtra("data", data);
-            setResult(RESULT_OK, receivedIntent);
-        } else {
-            location = location + File.separator + folderAndFileList.get(position).getName();
-            loadLists(location);
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + bookfolderName + folderAndFileList.get(position).getName());
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", file);
+        String fileExtend = getExtension(folderAndFileList.get(position).getName());
+        if (fileExtend.equalsIgnoreCase("mp3") ||fileExtend.equalsIgnoreCase("m4a")) {
+            intent.setDataAndType(uri, "audio/*");
+        } else if (fileExtend.equalsIgnoreCase("mp4")) {
+            intent.setDataAndType(uri, "video/*");
+        } else if (fileExtend.equalsIgnoreCase("jpg")
+                || fileExtend.equalsIgnoreCase("jpeg")
+                || fileExtend.equalsIgnoreCase("gif")
+                || fileExtend.equalsIgnoreCase("png")
+                || fileExtend.equalsIgnoreCase("bmp")) {
+            intent.setDataAndType(uri, "image/*");
+        } else if (fileExtend.equalsIgnoreCase("txt")) {
+            intent.setDataAndType(uri, "text/*");
+        } else if (fileExtend.equalsIgnoreCase("doc")
+                || fileExtend.equalsIgnoreCase("docx")) {
+            intent.setDataAndType(uri, "application/msword");
+        } else if (fileExtend.equalsIgnoreCase("xls")
+                || fileExtend.equalsIgnoreCase("xlsx")) {
+            intent.setDataAndType(uri,
+                    "application/vnd.ms-excel");
+        } else if (fileExtend.equalsIgnoreCase("ppt")
+                || fileExtend.equalsIgnoreCase("pptx")) {
+            intent.setDataAndType(uri,
+                    "application/vnd.ms-powerpoint");
+        } else if (fileExtend.equalsIgnoreCase("pdf")) {
+            intent.setDataAndType(uri, "application/pdf");
+            //나중에 우리 readerIntent.
+        } else if (fileExtend.equalsIgnoreCase("hwp")) {
+            intent.setDataAndType(uri,
+                    "application/haansofthwp");
         }
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
+            Toast.makeText(this, "기기에 파일을 열수 있는 어플이 없습니다.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
+    /*파일 확장자 찾기*/
+    public static String getExtension(String fileStr) {
+        return fileStr.substring(fileStr.lastIndexOf(".") + 1, fileStr.length());
     }
 
     @Override
@@ -383,22 +430,19 @@ public class FileList extends AppCompatActivity {
         intent.setType("application/*");
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID,
-                new File(Environment.getExternalStorageDirectory().getAbsolutePath() +   bookfolderName + folderAndFileList.get(position).getName())));
+                new File(Environment.getExternalStorageDirectory().getAbsolutePath() + bookfolderName + folderAndFileList.get(position).getName())));
         Intent chooser = Intent.createChooser(intent, "공유하기");
         this.startActivity(chooser);
     }
 
     public void setToolbar() {
         Toolbar toolbar2 = (Toolbar) findViewById(R.id.toolbar2);
-        spinner = (Spinner)findViewById(R.id.spinner_nav);
-
-        Intent myintent = getIntent();
-        FolderName = myintent.getExtras().getString("name");
+        spinner = (Spinner) findViewById(R.id.spinner_nav);
 
         setSupportActionBar(toolbar2);
 
         getSupportActionBar().setDisplayShowTitleEnabled(false); //기존 타이틀은 안보여주게
-        TextView text = (TextView)findViewById(R.id.text);
+        TextView text = (TextView) findViewById(R.id.text);
         text.setText(FolderName);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //뒤로가기 버튼 설정
 
@@ -411,7 +455,7 @@ public class FileList extends AppCompatActivity {
         list.add("PDF");
         list.add("MP3");
 
-        CustomSpinnerAdapter spinnerAdapter = new CustomSpinnerAdapter(getApplicationContext(),list);
+        CustomSpinnerAdapter spinnerAdapter = new CustomSpinnerAdapter(getApplicationContext(), list);
         spinner.setAdapter(spinnerAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

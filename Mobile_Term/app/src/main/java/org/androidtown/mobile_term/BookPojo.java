@@ -5,6 +5,7 @@ public class BookPojo {
     private String day;
     private boolean folder;
     private String size;
+    private String location;
 
     public BookPojo(String name, boolean folder) {
         this.name = name;
@@ -41,6 +42,14 @@ public class BookPojo {
 
     public String getSize() {
         return size;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getLocation() {
+        return location;
     }
 
 }
