@@ -41,7 +41,7 @@ public class BookAdapter extends ArrayAdapter<BookPojo> {
             imageView.setImageResource(R.drawable.folder);
         } else if (dataList.get(position).getName().contains("pdf")) {
             imageView.setImageResource(R.drawable.pdf);
-        } else if (dataList.get(position).getName().contains("mp3")) {
+        } else if (dataList.get(position).getName().contains("mp3") || dataList.get(position).getName().contains("m4a") || dataList.get(position).getName().contains("mp4")) {
             imageView.setImageResource(R.drawable.mp3);
         } else if (dataList.get(position).getName().contains("pptx")) {
             imageView.setImageResource(R.drawable.ppt);

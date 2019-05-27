@@ -1,6 +1,7 @@
 package org.androidtown.mobile_term;
 
 public class BookPojo {
+    private int posi;
     private String name;
     private String day;
     private boolean folder;
@@ -11,6 +12,10 @@ public class BookPojo {
         this.name = name;
         this.folder = folder;
     }
+
+    public int getPosi() {return posi;}
+
+    public void setPosi(int posi) {this.posi = posi;}
 
     public String getName() {
         return name;
