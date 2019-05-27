@@ -23,7 +23,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-
+/**
+ *
+ * @brief 기기 내의 모든 폴더와 파일을 볼 수 있는 클래스이다.
+ * @details 폴더 내부의 파일을 선택하고 이동시킬 수 있다.
+ * @author 가천대 소프트웨어학과 10조
+ * @date 2019-05-04
+ * @version 0.0.1
+ *
+ */
 public class FolderPicker extends Activity {
     ArrayList<FilePojo> folderAndFileList;
     ArrayList<FilePojo> foldersList;
@@ -38,6 +46,7 @@ public class FolderPicker extends Activity {
     boolean pickFiles;
     Intent receivedIntent;
     String folderName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

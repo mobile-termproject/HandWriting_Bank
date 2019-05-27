@@ -17,9 +17,9 @@
             android:icon="@drawable/ic_menu_slideshow"
             android:title="스캔" />
         <item
-            android:id="@+id/app_use"
+            android:id="@+id/qrcode"
             android:icon="@drawable/ic_menu_manage"
-            android:title="어플 사용법" />
+            android:title="QR 코드" />
 
         <item
             android:id="@+id/gachon_login"

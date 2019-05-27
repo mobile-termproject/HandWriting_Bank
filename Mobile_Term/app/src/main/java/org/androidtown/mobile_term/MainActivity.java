@@ -63,8 +63,18 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
+import java.util.Date;
+/**
+ *
+ * @brief 전체적인 기능을 관리할 수 있는 클래스로, 만들어준 폴더를 관리해준다.
+ * @details 네비게이션 바를 통해서 로그인 여부를 관리해주고, 가천대 과목의 크롤링, 폴더관리를 지원해준다.
+ * @author 가천대 소프트웨어학과 10조
+ * @date 2019-05-04
+ * @version 0.0.1
+ *
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -72,6 +82,10 @@ public class MainActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth; //Firebase로 로그인한 사용자 정보 알기 위해
     Bitmap bitmap; //프로필 uri이용해 bitmap으로
+
+    long mNow;
+    Date mDate;
+    SimpleDateFormat mFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
@@ -182,7 +196,20 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+
+
+    /**
+     *
+     *     @brief Make navigation bar in MainActivity
+     *     @details make navigation bar and setting each node
+     *
+     *     @return boolean
+     *     if success Navigation return true
+     *     else return false
+     *
+     *     @SuppressWarnings("StatementWithEmptyBody")
+     *
+     */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -194,7 +221,15 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.scan) {
 
-        } else if (id == R.id.app_use) {
+        } else if (id == R.id.qrcode) {
+            String studentId = "m201532716"; //이부분은 크롤링으로 바꿔주기
+            String time = getTime();
+            String qrString = studentId + time;
+
+            //스트링값을 QRImage 액티비티로 넘겨주기
+            Intent intent = new Intent(MainActivity.this, QRImage.class);
+            intent.putExtra("Qr",qrString);
+            startActivity(intent);
 
         } else if (id == R.id.logout) { //로그아웃 선택 시 로그인 화면으로 이동
             AlertDialog.Builder alert_confirm = new AlertDialog.Builder(MainActivity.this);
@@ -268,7 +303,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
     @Override
     protected  void onResume(){
         super.onResume();
@@ -293,7 +327,6 @@ public class MainActivity extends AppCompatActivity
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-
                 view.setBackgroundColor(Color.GRAY);
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle(data.get(position).getName() + " 과목을 삭제하시겠습니까?");
@@ -422,6 +455,12 @@ public class MainActivity extends AppCompatActivity
             }
         };
         databaseReference.addChildEventListener(mChild);
+    }
+
+    private String getTime() {
+        mNow = System.currentTimeMillis();
+        mDate = new Date(mNow);
+        return mFormat.format(mDate);
     }
 
     @Override
