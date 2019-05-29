@@ -102,7 +102,7 @@ public class SplashLogin extends AppCompatActivity implements GoogleApiClient.On
                 Animation.RELATIVE_TO_SELF, 0.0f,
                 Animation.RELATIVE_TO_SELF, 0.0f,
                 Animation.RELATIVE_TO_SELF, 0.0f,
-                Animation.RELATIVE_TO_SELF, -1.5f);
+                Animation.RELATIVE_TO_SELF, -1.0f);
         animation.setFillAfter(true); // 이동 이후 자리에 고정
         animation.setDuration(3000); // 3초 간 이동
         splash.startAnimation(animation);
@@ -149,7 +149,6 @@ public class SplashLogin extends AppCompatActivity implements GoogleApiClient.On
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         ;
     }
-
     /*permission 보내는 코드 */
     void checkStoragePermission() { //스플레쉬 화면으로 옮기는게 좋을듯
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

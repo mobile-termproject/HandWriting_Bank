@@ -16,15 +16,16 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_alignParentTop="true"
-            android:background="@color/gray">
+            android:background="@color/white">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="모바일 텀프로젝트"
-                    android:textColor="@color/white"
-                    android:textSize="20dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="필기뱅크"
+                android:textColor="@color/black"
+                android:textSize="28sp"
+                android:textStyle="italic" />
 
         </android.support.v7.widget.Toolbar>
 
@@ -38,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="25dp"
-        app:backgroundTint="@color/gray"
+        app:backgroundTint="@color/white"
         app:srcCompat="@drawable/add" />
 
 </android.support.design.widget.CoordinatorLayout>

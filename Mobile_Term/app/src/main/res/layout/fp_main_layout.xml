@@ -9,14 +9,14 @@
         android:id="@+id/fp_tv_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#f7fbaa"
+        android:background="@color/JColor"
         android:ellipsize="end"
         android:gravity="left"
         android:padding="5dp"
         android:singleLine="true"
         android:text="Current Location"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="#333" />
+        android:textColor="@color/white" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,21 +29,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="전체선택" />
+            android:background="@color/JColor"
+            android:text="전체선택"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/move"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="완료" />
+            android:background="@color/JColor"
+            android:text="확인"
+            android:textColor="@color/white" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@color/JColor"
             android:onClick="cancel"
-            android:text="닫기" />
+            android:text="취소"
+            android:textColor="@color/white" />
 
     </LinearLayout>
 

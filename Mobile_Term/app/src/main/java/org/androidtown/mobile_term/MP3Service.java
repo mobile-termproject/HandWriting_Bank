@@ -37,6 +37,7 @@ public class MP3Service extends Service {
     String filename = "";
     NotificationManager notifManager;
     NotificationCompat.Builder mBuilder;
+    RemoteViews remoteViews;
     Uri playparser;
 
     @Override
@@ -77,6 +78,8 @@ public class MP3Service extends Service {
                     mediaPlayer.start();
                 showCustomNotification();
             } else if (intent.getAction().equals(CommandActions.CLOSE)) {
+                remoteViews.setBoolean(R.id.btn_close, "setEnabled", false);
+                remoteViews.setBoolean(R.id.btn_play_pause, "setEnabled", false);
                 notifManager.cancelAll();
                 stopSelf();
             }
@@ -132,7 +135,7 @@ public class MP3Service extends Service {
     private void showCustomNotification(){
         mBuilder = createNotification();
 
-        RemoteViews remoteViews = new RemoteViews(getPackageName(),R.layout.notification_player);
+        remoteViews = new RemoteViews(getPackageName(),R.layout.notification_player);
         remoteViews.setTextViewText(R.id.txt_title,filename);
         if (state == 1)
             remoteViews.setImageViewResource(R.id.btn_play_pause, R.drawable.pause);

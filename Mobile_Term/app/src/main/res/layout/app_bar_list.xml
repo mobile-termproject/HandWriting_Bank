@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_alignParentTop="true"
-            android:background="@color/gray">
+            android:background="@color/JColor">
 
             <TextView
                 android:id="@+id/folder_text"
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="25dp"
-        app:backgroundTint="@color/gray"
-        app:srcCompat="@drawable/add" />
+        app:backgroundTint="@color/JColor"
+        app:srcCompat="@drawable/add2" />
 
 </android.support.design.widget.CoordinatorLayout>

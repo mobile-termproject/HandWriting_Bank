@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -123,11 +124,6 @@ public class RecordService extends Service {
             ;
         }
 
-        /*Intent myIntent = new Intent(this, FileList.class);
-        myIntent.putExtra("location", "/"+FileList.FolderName+"/");
-        myIntent.putExtra("name",FileList.FolderName);
-        startActivity(myIntent);*/
-
         Intent myIntent = new Intent(this, FolderPicker.class);
         startActivity(myIntent);
     }
@@ -170,8 +166,20 @@ public class RecordService extends Service {
         Intent actionTogglePlay = new Intent(CommandActions.RECORD);
         Intent actionPause = new Intent(CommandActions.PAUSE);
         Intent actionClose = new Intent(CommandActions.CLOSERECORD);
-        PendingIntent togglePlay = PendingIntent.getService(this, 0, actionTogglePlay, FLAG_CANCEL_CURRENT);
-        PendingIntent Pause = PendingIntent.getService(this, 0, actionPause, FLAG_CANCEL_CURRENT);
+
+        PendingIntent togglePlay;
+        PendingIntent Pause;
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            togglePlay = PendingIntent.getForegroundService(this, 0, actionTogglePlay, FLAG_CANCEL_CURRENT);
+            Pause = PendingIntent.getForegroundService(this, 0, actionPause, FLAG_CANCEL_CURRENT);
+        }
+        else {
+            togglePlay = PendingIntent.getService(this, 0, actionTogglePlay, FLAG_CANCEL_CURRENT);
+            Pause = PendingIntent.getService(this, 0, actionPause, FLAG_CANCEL_CURRENT);
+        }
+
+
         PendingIntent close = PendingIntent.getService(this, 0, actionClose, FLAG_CANCEL_CURRENT);
 
         mBuilder.setContent(remoteViews)
@@ -184,6 +192,7 @@ public class RecordService extends Service {
         NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder.build().flags = Notification.FLAG_NO_CLEAR;
         mNotificationManager.notify(1,mBuilder.build());
+        startForeground(1,mBuilder.build());
     }
 
     private NotificationCompat.Builder createNotification() {

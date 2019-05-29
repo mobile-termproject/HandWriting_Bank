@@ -1,9 +1,11 @@
 package org.androidtown.mobile_term;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +23,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class Gachon_Login extends AppCompatActivity {
@@ -34,6 +37,7 @@ public class Gachon_Login extends AppCompatActivity {
     String loginPASS;
 
     int check = 0;
+    ArrayList<String> arr = new ArrayList<String>();
 
     private FirebaseUser user;
     private FirebaseAuth mAuth; //Firebase로 로그인한 사용자 정보 알기 위해
@@ -89,10 +93,10 @@ public class Gachon_Login extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            String tr = user.getEmail();
+            /*String tr = user.getEmail();
             int get = tr.indexOf("@");
             tr = tr.substring(0,get);
-            int pic_num = 0;
+            int pic_num = 0;*/
 
             try {
                 Connection.Response res = Jsoup.connect("https://cyber.gachon.ac.kr/login.php")
@@ -109,11 +113,16 @@ public class Gachon_Login extends AppCompatActivity {
                 Elements els = doc.select("div[class=course-title]");
                 check = els.size();
 
+                Intent myIntent = new Intent(Gachon_Login.this,select_course.class);
+
                 for(Element elem : els) {
                     String mytitle = elem.select("h3").text();
-                    databaseReference.child(tr).push().setValue(mytitle + pic_num);
-                    pic_num = (pic_num + 1) % 8;
+                    arr.add(new String(mytitle));
                 }
+
+                myIntent.putStringArrayListExtra("arr",arr);
+                startActivity(myIntent); //select_course
+
             } catch (IOException e) { //네트워크 혹은 홈페이지 오류
                 Toast.makeText(getApplicationContext(),"로그인 오류", Toast.LENGTH_SHORT).show();
             }

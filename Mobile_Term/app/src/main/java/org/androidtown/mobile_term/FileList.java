@@ -24,6 +24,7 @@ import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -120,28 +121,6 @@ public class FileList extends AppCompatActivity{
     public final static int STATE_RECORDING = 1;    //녹음 중
     public final static int STATE_PAUSE = 2;        // 일시 정지 중
     private int state = STATE_PREV;
-/********************************************************************************************************************
-    //녹음
-    String path = "";
-    MediaRecorder recorder = new MediaRecorder();
-    private boolean isRecording = false;
-    MediaRecorder mediaRecorder;
-    MediaPlayer mediaPlayer;
-    Button appbarbtn;
-    Button pausebtn;
-
-
-    //일시정지 포함 녹음
-    String finalpath = null;
-    private List outputFileList = new ArrayList();
-    //private ArrayList<String> outputFileList;
-    int count = 0;
-    int noti_count = 0;
-    public final static int STATE_PREV = 0;     //녹음 시작 전
-    public final static int STATE_RECORDING = 1;    //녹음 중
-    public final static int STATE_PAUSE = 2;        // 일시 정지 중
-    private int state = STATE_PREV;
-****************************************************************************************************************************/
 
     final int REQUEST_PERMISSION_CODE = 1000;
 
@@ -383,6 +362,13 @@ public class FileList extends AppCompatActivity{
             intent1.setAction(CommandActions.TOGGLE_PLAY);
             servicename = folderAndFileList.get(position).getName();
             servicepath = Environment.getExternalStorageDirectory().getAbsolutePath() + bookfolderName + folderAndFileList.get(position).getName();
+            /*if (Build.VERSION.SDK_INT >= 26) {
+                getApplicationContext().startForegroundService(intent1);
+            }
+            else {
+                getApplicationContext().startService(intent1);
+            }*/
+
             startService(intent1);
         } else if (fileExtend.equalsIgnoreCase("mp4")) {
             K = 1;
@@ -391,6 +377,12 @@ public class FileList extends AppCompatActivity{
             intent1.setAction(CommandActions.MP4_PLAY);
             servicename = folderAndFileList.get(position).getName();;
             servicepath = Environment.getExternalStorageDirectory().getAbsolutePath() + bookfolderName + folderAndFileList.get(position).getName();
+            /*if (Build.VERSION.SDK_INT >= 26) {
+                getApplicationContext().startForegroundService(intent1);
+            }
+            else {
+                getApplicationContext().startService(intent1);
+            }*/
             startService(intent1);
         } else if (fileExtend.equalsIgnoreCase("jpg")
                 || fileExtend.equalsIgnoreCase("jpeg")
@@ -487,7 +479,7 @@ public class FileList extends AppCompatActivity{
         // ad.setMessage("Message");   // 내용 설정
         final EditText et = new EditText(this);
         et.setText(folderAndFileList.get(position).getName());
-        et.setSelection(et.length());
+        et.setSelection(et.length() - 4);
         ad.setView(et);
         ad.setPositiveButton("이름 변경", new DialogInterface.OnClickListener() {
             @Override
@@ -584,7 +576,12 @@ public class FileList extends AppCompatActivity{
                     recordBtn.setImageResource(R.drawable.stoprecord);
                     Intent intent = new Intent(getApplicationContext(),RecordService.class);
                     intent.setAction(CommandActions.RECORD);
-                    startService(intent);
+                    if (Build.VERSION.SDK_INT >= 26) {
+                        getApplicationContext().startForegroundService(intent);
+                    }
+                    else {
+                        getApplicationContext().startService(intent);
+                    }
                 } else {
                     isRecording = false;
                     recordBtn.setImageResource(R.drawable.record);
@@ -595,34 +592,6 @@ public class FileList extends AppCompatActivity{
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //뒤로가기 버튼 설정
         addItemToSpinner();
-    }
-
-    private NotificationCompat.Builder createNotification() {
-        String channelId = "channel";
-        String channelName = "Channel Name";
-        NotificationManager notifManager
-                = (NotificationManager) getSystemService (Context.NOTIFICATION_SERVICE);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel mChannel = new NotificationChannel(
-                    channelId, channelName, importance);
-            notifManager.createNotificationChannel(mChannel);
-        }
-
-        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
-        builder.setSmallIcon(R.mipmap.ic_launcher)
-                .setLargeIcon(icon)
-                .setContentTitle("StatusBar Title")
-                .setContentText("StatusBar subTitle")
-                .setSmallIcon(R.mipmap.ic_launcher)/*스와이프 전 아이콘*/
-                //.setAutoCancel(true)
-                .setWhen(System.currentTimeMillis())
-                .setDefaults(Notification.DEFAULT_ALL);
-
-        return builder;
     }
 
     public void addItemToSpinner() {
@@ -639,7 +608,6 @@ public class FileList extends AppCompatActivity{
 
                 spinnerset = parent.getItemAtPosition(position).toString();
                 loadLists(location);
-
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -647,19 +615,4 @@ public class FileList extends AppCompatActivity{
             }
         });
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case REQUEST_PERMISSION_CODE:
-            {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED )
-                    Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-            break;
-        }
-    }
-
 }
