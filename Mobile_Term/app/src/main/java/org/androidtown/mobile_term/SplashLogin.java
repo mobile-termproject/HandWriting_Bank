@@ -158,7 +158,7 @@ public class SplashLogin extends AppCompatActivity implements GoogleApiClient.On
                     != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO},
                         SDCARD_PERMISSION);
             }
         }

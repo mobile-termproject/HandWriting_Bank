@@ -9,7 +9,8 @@
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        <android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/toolbar2"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -24,15 +25,22 @@
                 android:text=" "
                 android:ellipsize="end"/>
 
+            <ImageButton
+                android:id="@+id/recordbtn"
+                android:src="@drawable/record"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="5dp"
+                android:scaleType="centerInside"/>
+
             <Spinner
                 android:id="@+id/spinner_nav"
                 android:layout_gravity="right"
-                android:layout_width="wrap_content"
+                android:layout_width="30dp"
                 android:layout_height="wrap_content">
             </Spinner>
 
         </android.support.v7.widget.Toolbar>
-
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_list" />

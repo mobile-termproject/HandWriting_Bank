@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="15dp">
+
+    <ImageView
+        android:layout_margin="10dp"
+        android:id="@+id/img_albumart"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="5dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/empty_albumart"/> />
+
+    <TextView
+        android:textSize="20dp"
+        android:id="@+id/txt_title"
+        android:padding="8dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:text="Sample Title"
+        android:textColor="@android:color/black"/>
+
+    <ImageButton
+        android:layout_margin="10dp"
+        android:id="@+id/btn_record"
+        android:padding="8dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@null"
+        android:scaleType="centerInside"
+        android:src="@drawable/record"/>
+
+    <ImageButton
+        android:layout_margin="10dp"
+        android:id="@+id/btn_pause"
+        android:padding="8dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@null"
+        android:src="@drawable/pause"/>
+
+    <ImageButton
+        android:layout_margin="10dp"
+        android:id="@+id/btn_close"
+        android:padding="8dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@null"
+        android:src="@drawable/close"/>
+</LinearLayout>

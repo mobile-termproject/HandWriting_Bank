@@ -86,11 +86,16 @@ import java.util.UUID;
  */
 public class FileList extends AppCompatActivity{
 
+    static boolean isRecording = false;
+    static int filecounter = 0;
     static String servicepath = null;
     static String servicename = null;
+    static String recordpath = null;
+    static List outputFileList = new ArrayList();
+
     private Spinner spinner;
     String reqLocation;
-    String FolderName;
+    static String FolderName;
     String spinnerset;
 
     int folderandfile = 0;
@@ -111,7 +116,10 @@ public class FileList extends AppCompatActivity{
     Intent receivedIntent;
     String bookfolderName;
 
-    private Messenger mServiceMessenger = null;
+    public final static int STATE_PREV = 0;     //녹음 시작 전
+    public final static int STATE_RECORDING = 1;    //녹음 중
+    public final static int STATE_PAUSE = 2;        // 일시 정지 중
+    private int state = STATE_PREV;
 /********************************************************************************************************************
     //녹음
     String path = "";
@@ -137,22 +145,11 @@ public class FileList extends AppCompatActivity{
 
     final int REQUEST_PERMISSION_CODE = 1000;
 
-    //날짜 셋팅
-    long mNow;
-    Date mDate;
-    SimpleDateFormat mFormat = new SimpleDateFormat("yyMMdd-HH:mm");
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list);
 
-        //Request Runtime permission************************************************************************************************
-        //if (!checkPermissionFromDevice())
-        //    requsetPermission();
-
-        /*LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.app_bar_list,,true);*/
         try {
             setToolbar();
         } catch (IOException e) {
@@ -163,24 +160,6 @@ public class FileList extends AppCompatActivity{
             Toast.makeText(this, "Storage access permission not given", Toast.LENGTH_LONG).show();
             finish();
         }
-
-        /*mBtnPlayPause.setOnClickListener(new View.OnClickListener() {
-            AudioApplication.getInstance().getServiceInterface().togglePlay();
-            /*@Override
-            public void onClick(View v) {
-                case R.id.btn_rewind:
-                // 이전곡으로 이동
-                AudioApplication.getInstance().getServiceInterface().rewind();
-                break;
-                case R.id.btn_play_pause:
-                // 재생 또는 일시정지
-                break;
-                case R.id.btn_forward:
-                // 다음곡으로 이동
-                AudioApplication.getInstance().getServiceInterface().forward();
-                break;
-            }
-        });*/
 
         FloatingActionButton include = (FloatingActionButton) findViewById(R.id.include);
         include.setOnClickListener(new View.OnClickListener() {
@@ -396,17 +375,24 @@ public class FileList extends AppCompatActivity{
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", file);
         String fileExtend = getExtension(folderAndFileList.get(position).getName());
-        if (fileExtend.equalsIgnoreCase("mp3") ||fileExtend.equalsIgnoreCase("m4a") ||fileExtend.equalsIgnoreCase("mp4")) {
+
+        if (fileExtend.equalsIgnoreCase("mp3") ||fileExtend.equalsIgnoreCase("m4a")) {
             K = 1;
             Intent intent1 = new Intent(this,MP3Service.class);
             stopService(intent1);
             intent1.setAction(CommandActions.TOGGLE_PLAY);
+            servicename = folderAndFileList.get(position).getName();
+            servicepath = Environment.getExternalStorageDirectory().getAbsolutePath() + bookfolderName + folderAndFileList.get(position).getName();
+            startService(intent1);
+        } else if (fileExtend.equalsIgnoreCase("mp4")) {
+            K = 1;
+            Intent intent1 = new Intent(this,MP3Service.class);
+            stopService(intent1);
+            intent1.setAction(CommandActions.MP4_PLAY);
             servicename = folderAndFileList.get(position).getName();;
             servicepath = Environment.getExternalStorageDirectory().getAbsolutePath() + bookfolderName + folderAndFileList.get(position).getName();
             startService(intent1);
-        } /*else if (fileExtend.equalsIgnoreCase("mp4")) {
-            intent.setDataAndType(uri, "video/*");
-        }*/ else if (fileExtend.equalsIgnoreCase("jpg")
+        } else if (fileExtend.equalsIgnoreCase("jpg")
                 || fileExtend.equalsIgnoreCase("jpeg")
                 || fileExtend.equalsIgnoreCase("gif")
                 || fileExtend.equalsIgnoreCase("png")
@@ -582,61 +568,33 @@ public class FileList extends AppCompatActivity{
     public void setToolbar() throws IOException{
         Toolbar toolbar2 = (Toolbar) findViewById(R.id.toolbar2);
         spinner = (Spinner) findViewById(R.id.spinner_nav);
-
+        final ImageButton recordBtn = (ImageButton) findViewById(R.id.recordbtn);
         setSupportActionBar(toolbar2);
 
         getSupportActionBar().setDisplayShowTitleEnabled(false); //기존 타이틀은 안보여주게
         final TextView f_text = (TextView) findViewById(R.id.folder_text);
         f_text.setText(FolderName);
 
-        /*appbarbtn = (Button)findViewById(R.id.record_btn);
-        appbarbtn.setOnClickListener(new View.OnClickListener() {
+        recordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    if (state == STATE_PREV) {
-                        showCustomNotification();
-                        play();
-                        appbarbtn.setText("녹음 중지");
-                    }
-                    else {
-                        try {
-                            stop();
-                            appbarbtn.setText("녹음 시작");
-                        } catch (IOException e) {
-                            ;
-                        }
-                        loadLists(location);
-                    }
-               }
-        });
-
-        pausebtn = (Button)findViewById(R.id.pause);
-        pausebtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (state == STATE_RECORDING) {
-                    pause();
-                    pausebtn.setText("일시정지 중");
+                if (isRecording == false) {
+                    isRecording = true;
+                    recordpath = Environment.getExternalStorageDirectory().getAbsolutePath() + reqLocation;
+                    recordBtn.setImageResource(R.drawable.stoprecord);
+                    Intent intent = new Intent(getApplicationContext(),RecordService.class);
+                    intent.setAction(CommandActions.RECORD);
+                    startService(intent);
                 } else {
-                    play();
-                    pausebtn.setText("일시정지");
+                    isRecording = false;
+                    recordBtn.setImageResource(R.drawable.record);
+                    Intent intent = new Intent(getApplicationContext(),RecordService.class);
+                    stopService(intent);
                 }
             }
-        });*/
+        });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //뒤로가기 버튼 설정
         addItemToSpinner();
-    }
-
-    private void showCustomNotification(){
-        NotificationCompat.Builder mBuilder = createNotification();
-
-        RemoteViews remoteViews = new RemoteViews(getPackageName(),R.layout.record_notification);
-
-        mBuilder.setContent(remoteViews)
-                .setDefaults(Notification.DEFAULT_ALL);
-
-        NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(1,mBuilder.build());
     }
 
     private NotificationCompat.Builder createNotification() {
@@ -683,146 +641,11 @@ public class FileList extends AppCompatActivity{
                 loadLists(location);
 
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 ;
             }
         });
-    }
-/******************************************************************************************************************
-    public void play() {
-        count += 1;
-        path = Environment.getExternalStorageDirectory().getAbsolutePath() + reqLocation;
-        String cnt = Integer.toString(count);
-        String nowFile = path + cnt + ".mp4";
-        outputFileList.add(nowFile);
-
-        if (checkPermissionFromDevice()){
-
-            path = Environment.getExternalStorageDirectory().getAbsolutePath() + reqLocation
-                    + "[" + getTime() + "] " + FolderName + ".m4a";
-
-            setupMediaRecorder();
-            mediaRecorder.setOutputFile(nowFile);
-
-            try {
-                mediaRecorder.prepare();
-                //Prepares the recorder to begin capturing and encoding data.
-                // This method must be called after setting up the desired audio and video sources, encoders, file format, etc., but before start().
-                mediaRecorder.start();
-            }catch (IOException e){
-                e.printStackTrace();
-            }catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
-            Toast.makeText(this, "Recording...", Toast.LENGTH_SHORT).show();
-        }else{
-            requsetPermission();
-        }
-
-        state = STATE_RECORDING;
-    }
-
-    public void stop() throws IOException{
-        if (state == STATE_PAUSE) {
-            //일시정지 상태에서 정지버튼
-        } else {
-            //재상상태에서 정지버튼
-            try {
-                mediaRecorder.stop();
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                Toast.makeText(getApplicationContext(),"녹음실패",Toast.LENGTH_SHORT).show();
-            }
-            mediaRecorder.reset();
-            mediaRecorder.release();
-            mediaRecorder = null;
-        }
-
-        count = 0;
-
-        try {
-            append(outputFileList);
-        } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "Append Error!!", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-
-        state = STATE_PREV;
-    }
-
-    public void pause() {
-        mediaRecorder.stop();     //현재 녹음 중인 파일 종료 (임시파일)
-        mediaRecorder.reset();
-        mediaRecorder.release();
-        mediaRecorder = null;
-
-        state = STATE_PAUSE;
-    }
-
-    public void append(List<String> list) throws IOException{
-        Movie[] inMovies;
-        inMovies = new Movie[list.size()];
-        try {
-            for (int i = 0; i<list.size();i++) {
-                inMovies[i] = MovieCreator.build(list.get(i));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        List<Track> audioTracks = new LinkedList<Track>();
-
-        for (Movie m : inMovies) {
-            for (Track t : m.getTracks()) {
-                if (t.getHandler().equals("soun")) {
-                    audioTracks.add(t);
-                }
-            }
-        }
-
-        Movie result = new Movie();
-
-        if (audioTracks.size() > 0) {
-            result.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
-        }
-
-        Container out = new DefaultMp4Builder().build(result);
-        FileChannel fc = null;
-
-        try {
-            fc = new FileOutputStream(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + reqLocation
-                    + "[" + getTime() + "] " + FolderName + ".mp4")).getChannel();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            out.writeContainer(fc);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            fc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        for (int i = 0; i<list.size();i++) {
-            File fl = new File(list.get(i));
-            fl.delete();
-            //inMovies[i] = MovieCreator.build(list.get(i));
-        }
-    }
-
-    private void setupMediaRecorder() {
-        mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        //mediaRecorder.setOutputFile(path);
     }
 
     @Override
@@ -837,26 +660,6 @@ public class FileList extends AppCompatActivity{
             }
             break;
         }
-    }
-
-    private boolean checkPermissionFromDevice() {
-        int write_external_storage_result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        int record_audio_result = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
-        return  write_external_storage_result == PackageManager.PERMISSION_GRANTED &&
-                record_audio_result == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requsetPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.RECORD_AUDIO
-        },REQUEST_PERMISSION_CODE);
-    }
-**************************************************************************************************************************************/
-    private String getTime() {
-        mNow = System.currentTimeMillis();
-        mDate = new Date(mNow);
-        return mFormat.format(mDate);
     }
 
 }

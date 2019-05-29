@@ -5,32 +5,39 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class MP3Service extends Service {
 
+    FileInputStream fis = null;
     MediaPlayer mediaPlayer;
     int state = 0;
     String path = "";
     String filename = "";
     NotificationManager notifManager;
     NotificationCompat.Builder mBuilder;
+    Uri playparser;
 
     @Override
     public void onCreate() {
@@ -48,7 +55,6 @@ public class MP3Service extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         String ext = Environment.getExternalStorageState();
         if(ext.equals(Environment.MEDIA_MOUNTED)) {
             path = FileList.servicepath;
@@ -58,6 +64,10 @@ public class MP3Service extends Service {
             if (intent.getAction().equals(CommandActions.TOGGLE_PLAY) && mp3file.exists()) {
                 state = 1;
                 new Thread(mRun).start();
+                showCustomNotification();
+            } else if (intent.getAction().equals(CommandActions.MP4_PLAY) && mp3file.exists()) {
+                state = 1;
+                new Thread(tRun).start();
                 showCustomNotification();
             } else if (intent.getAction().equals(CommandActions.PLAY)) {
                 state = 0;
@@ -81,6 +91,21 @@ public class MP3Service extends Service {
         public void run() {
             try {
                 mediaPlayer.setDataSource(path);
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    Runnable tRun = new Runnable() {
+
+        @Override
+        public void run() {
+            try {
+                fis = new FileInputStream(path);
+                mediaPlayer.setDataSource(fis.getFD());
                 mediaPlayer.prepare();
                 mediaPlayer.start();
             }catch (Exception e) {
@@ -128,6 +153,7 @@ public class MP3Service extends Service {
         remoteViews.setOnClickPendingIntent(R.id.btn_close, close);
 
         NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        mBuilder.build().flags = Notification.FLAG_NO_CLEAR;
         mNotificationManager.notify(1,mBuilder.build());
     }
 
@@ -146,8 +172,7 @@ public class MP3Service extends Service {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
         builder.setSmallIcon(R.mipmap.ic_launcher)
-                .setDefaults(Notification.DEFAULT_ALL);
-
+                .setOngoing(true);
         return builder;
     }
 }

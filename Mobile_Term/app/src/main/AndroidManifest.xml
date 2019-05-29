@@ -60,10 +60,17 @@
         <service android:enabled="true" android:name=".MP3Service">
             <intent-filter>
                 <action android:name="PLAY"/>
-                <action android:name="REWIND"/>
                 <action android:name="TOGGLE_PLAY"/>
-                <action android:name="FORWARD"/>
+                <action android:name="MP4_PLAY"/>
                 <action android:name="CLOSE"/>
+            </intent-filter>
+        </service>
+
+        <service android:enabled="true" android:name=".RecordService">
+            <intent-filter>
+                <action android:name="RECORD"/>
+                <action android:name="PAUSE"/>
+                <action android:name="CLOSERECORD"/>
             </intent-filter>
         </service>
     </application>
