@@ -1,0 +1,6 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <string name="app_name">Painter</string>
+    <string name="saving">Saving…</string>
+    <string name="saved_as">Saved As:\n</string>
+</resources>
