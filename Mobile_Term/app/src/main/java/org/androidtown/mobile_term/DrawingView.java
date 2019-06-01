@@ -66,7 +66,6 @@ public class DrawingView extends View {
         options.inPreferredConfig = Bitmap.Config.ALPHA_8;
         setShape(BitmapFactory.decodeResource(getResources(), inner, options),
                 BitmapFactory.decodeResource(getResources(), outer, options));
-
     }
 
     public void setShape(Bitmap inner, Bitmap outer) {
@@ -119,12 +118,15 @@ public class DrawingView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+
+        mLayerBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        //if (PDFActivity.num == 0)
         mLayerBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mLayerCanvas.setBitmap(mLayerBitmap);
 
         if (mOuterShape != null) {
-            int dx = (w - mOuterShape.getWidth()) / 2;
-            int dy = (h - mOuterShape.getHeight()) / 2;
+            int dx = w;
+            int dy = h;
             mMatrix.setTranslate(dx, dy);
         }
     }
@@ -168,14 +170,23 @@ public class DrawingView extends View {
         canvas.drawBitmap(mOuterShape, mMatrix, null);
 
         // Draw masked image to view
-        canvas.drawBitmap(mLayerBitmap, 0, 0, null);
+        if (PDFActivity.num == 0) {
+            canvas.drawBitmap(mLayerBitmap, 0, 0, null);
+        } else {
+            canvas.drawBitmap(PDFActivity.bitmap, 0, 0, null);
+            canvas.drawBitmap(mLayerBitmap, 0, 0, null);
+        }
+
     }
 
     private void drawOp(Canvas canvas, DrawOp op) {
+
         if (op.path.isEmpty()) {
             return;
         }
+
         final Paint paint;
+
         if (op.type == DrawOp.Type.PAINT) {
             paint = mPaintColor;
             paint.setColor(op.color);
@@ -184,7 +195,9 @@ public class DrawingView extends View {
             paint = mPaintEraser;
             paint.setStrokeWidth(op.stroke);
         }
+
         mLayerCanvas.drawPath(op.path, paint);
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -246,65 +259,4 @@ public class DrawingView extends View {
             PAINT, ERASE;
         }
     }
-	
-	/*
-	@Override
-	protected Parcelable onSaveInstanceState()
-	{
-		return new SavedState(super.onSaveInstanceState(), mBitmapDraw);
-	}
-	
-	@Override
-	protected void onRestoreInstanceState(Parcelable state)
-	{
-		SavedState savedState = (SavedState)state;
-		super.onRestoreInstanceState(savedState.getSuperState());
-		if(savedState.bitmap != null){
-			mBitmapDraw = savedState.bitmap;
-			mCanvasDraw = new Canvas(mBitmapDraw);
-			invalidate();
-		}
-	}
-	
-	
-	static class SavedState extends BaseSavedState
-	{
-		private Bitmap bitmap;
-		
-		
-		public SavedState(Parcelable superState, Bitmap bitmap)
-		{
-			super(superState);
-			this.bitmap = bitmap;
-		}
-		
-		public SavedState(Parcel source)
-		{
-			super(source);
-			bitmap = source.readParcelable(getClass().getClassLoader());
-		}
-		
-		@Override
-		public void writeToParcel(Parcel dest, int flags)
-		{
-			super.writeToParcel(dest, flags);
-			dest.writeParcelable(bitmap, flags);
-		}
-		
-		
-		public static final Parcelable.Creator<SavedState> 
-			CREATOR = new Parcelable.Creator<SavedState>()
-		{
-			public SavedState createFromParcel(Parcel in)
-			{
-				return new SavedState(in);
-			}
-			
-			public SavedState[] newArray(int size)
-			{
-				return new SavedState[size];
-			}
-		};
-	}
-	*/
 }
