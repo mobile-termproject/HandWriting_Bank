@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <color name="ab_color">#356d9e</color>
-    <color name="brush_panel_bg">#66669900</color>
-    <color name="pdf_background">#f2efe8</color>
-    <color name = "screen_rotation">#00ff0000</color>
-</resources>
