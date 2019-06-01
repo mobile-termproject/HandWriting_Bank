@@ -1,73 +1,34 @@
 package org.androidtown.mobile_term;
 
-import android.Manifest;
 import android.app.AlertDialog;
-import android.app.LoaderManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.ContentUris;
-import android.content.Context;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.Loader;
-import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupMenu;
-import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.coremedia.iso.boxes.Container;
-import com.googlecode.mp4parser.authoring.Movie;
-import com.googlecode.mp4parser.authoring.Track;
-import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
-import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
-import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.FileProvider;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,7 +46,7 @@ import java.util.UUID;
  * @version 0.0.1
  *
  */
-public class FileList extends AppCompatActivity{
+public class FileList extends AppCompatActivity {
 
     static boolean isRecording = false;
     static int filecounter = 0;
@@ -362,12 +323,6 @@ public class FileList extends AppCompatActivity{
             intent1.setAction(CommandActions.TOGGLE_PLAY);
             servicename = folderAndFileList.get(position).getName();
             servicepath = Environment.getExternalStorageDirectory().getAbsolutePath() + bookfolderName + folderAndFileList.get(position).getName();
-            /*if (Build.VERSION.SDK_INT >= 26) {
-                getApplicationContext().startForegroundService(intent1);
-            }
-            else {
-                getApplicationContext().startService(intent1);
-            }*/
 
             startService(intent1);
         } else if (fileExtend.equalsIgnoreCase("mp4")) {
@@ -377,12 +332,7 @@ public class FileList extends AppCompatActivity{
             intent1.setAction(CommandActions.MP4_PLAY);
             servicename = folderAndFileList.get(position).getName();;
             servicepath = Environment.getExternalStorageDirectory().getAbsolutePath() + bookfolderName + folderAndFileList.get(position).getName();
-            /*if (Build.VERSION.SDK_INT >= 26) {
-                getApplicationContext().startForegroundService(intent1);
-            }
-            else {
-                getApplicationContext().startService(intent1);
-            }*/
+
             startService(intent1);
         } else if (fileExtend.equalsIgnoreCase("jpg")
                 || fileExtend.equalsIgnoreCase("jpeg")
@@ -404,7 +354,11 @@ public class FileList extends AppCompatActivity{
             intent.setDataAndType(uri,
                     "application/vnd.ms-powerpoint");
         } else if (fileExtend.equalsIgnoreCase("pdf")) {
-            intent.setDataAndType(uri, "application/pdf");
+            K = 1;
+            Intent intent1 = new Intent(this, PDFActivity.class);
+            intent1.putExtra("name", folderAndFileList.get(position).getName());
+            intent1.putExtra("folder", bookfolderName);
+            startActivity(intent1);
             //나중에 우리 readerIntent.
         } else if (fileExtend.equalsIgnoreCase("hwp")) {
             intent.setDataAndType(uri,

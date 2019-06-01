@@ -31,4 +31,10 @@
         parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">@drawable/splash_main</item>
     </style>
+    <style name="playTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="colorPrimary">@color/ab_color</item>
+    <item name="colorPrimaryDark">@color/ab_color</item>
+    <item name="colorAccent">@color/ab_color</item>
+    </style>
+
 </resources>

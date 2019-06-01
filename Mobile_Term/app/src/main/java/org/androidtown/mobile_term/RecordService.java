@@ -1,5 +1,6 @@
 package org.androidtown.mobile_term;
 
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,10 +13,11 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
+
+import androidx.core.app.NotificationCompat;
 
 import com.coremedia.iso.boxes.Container;
 import com.googlecode.mp4parser.authoring.Movie;
@@ -35,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class RecordService extends Service {
     //MediaRecorder mediaRecorder;
@@ -46,10 +49,10 @@ public class RecordService extends Service {
     NotificationCompat.Builder mBuilder;
     int State = 0;
     int Pause_state = 0;
-
-    //날짜 셋팅
+/*날짜 셋팅*/
     long mNow;
     Date mDate;
+    Context mContext;
     SimpleDateFormat mFormat = new SimpleDateFormat("yyMMdd-HH:mm");
 
     @Override
@@ -59,7 +62,7 @@ public class RecordService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(intent.getAction().equals(CommandActions.RECORD)){
+        if (intent.getAction().equals(CommandActions.RECORD)) {
             record();
             State = 0;
             showCustomNotification();
@@ -67,7 +70,7 @@ public class RecordService extends Service {
             pause();
             State = 1;
             showCustomNotification();
-        }else if (intent.getAction().equals(CommandActions.CLOSERECORD)) {
+        } else if (intent.getAction().equals(CommandActions.CLOSERECORD)) {
             stopSelf();
             notifManager.cancelAll();
         }
@@ -91,6 +94,8 @@ public class RecordService extends Service {
             try {
                 recorder.prepare();
             } catch (IOException e) {
+            } catch (IllegalStateException il) {
+
             }
             //Toast.makeText(this, "Record Service가 시작되었습니다.", Toast.LENGTH_LONG).show();
             recorder.start();//녹음 시작
@@ -107,10 +112,10 @@ public class RecordService extends Service {
         Pause_state = 1;
     }
 
-    public void stop(){ //여기에 합치는거 들어가야함
+    public void stop() { //여기에 합치는거 들어가야함
         Toast.makeText(this, "Record Service가 중지되었습니다.", Toast.LENGTH_LONG).show();
         FileList.filecounter = 0;
-        if(Pause_state == 1) {
+        if (Pause_state == 1) {
             ;
         } else {
             recorder.stop();
@@ -120,11 +125,12 @@ public class RecordService extends Service {
 
         try {
             append(FileList.outputFileList);
-        }catch (IOException e) {
+        } catch (IOException e) {
             ;
         }
-
         Intent myIntent = new Intent(this, FolderPicker.class);
+        myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        myIntent.addFlags(Intent.FLAG_FROM_BACKGROUND);
         startActivity(myIntent);
     }
 
@@ -145,22 +151,21 @@ public class RecordService extends Service {
         return mFormat.format(mDate);
     }
 
-    private void showCustomNotification(){
+    private void showCustomNotification() {
         mBuilder = createNotification();
 
-        RemoteViews remoteViews = new RemoteViews(getPackageName(),R.layout.notification_record);
-        remoteViews.setTextViewText(R.id.txt_title,"녹음중");
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification_record);
+        remoteViews.setTextViewText(R.id.txt_title, "녹음중");
         if (State == 0) {//record 버튼 안눌리게
-            remoteViews.setImageViewResource(R.id.btn_record,R.drawable.stoprecord);
-            remoteViews.setImageViewResource(R.id.btn_pause,R.drawable.pause);
-            remoteViews.setBoolean(R.id.btn_record,"setEnabled",false);
-            remoteViews.setBoolean(R.id.btn_pause,"setEnabled",true);
-        }
-        else if(State == 1) { //일시정지 버튼 안눌리게
-            remoteViews.setImageViewResource(R.id.btn_pause,R.drawable.stoppause);
-            remoteViews.setImageViewResource(R.id.btn_record,R.drawable.record);
+            remoteViews.setImageViewResource(R.id.btn_record, R.drawable.stoprecord);
+            remoteViews.setImageViewResource(R.id.btn_pause, R.drawable.pause);
+            remoteViews.setBoolean(R.id.btn_record, "setEnabled", false);
+            remoteViews.setBoolean(R.id.btn_pause, "setEnabled", true);
+        } else if (State == 1) { //일시정지 버튼 안눌리게
+            remoteViews.setImageViewResource(R.id.btn_pause, R.drawable.stoppause);
+            remoteViews.setImageViewResource(R.id.btn_record, R.drawable.record);
             remoteViews.setBoolean(R.id.btn_pause, "setEnabled", false);
-            remoteViews.setBoolean(R.id.btn_record,"setEnabled",true);
+            remoteViews.setBoolean(R.id.btn_record, "setEnabled", true);
         }
 
         Intent actionTogglePlay = new Intent(CommandActions.RECORD);
@@ -173,8 +178,7 @@ public class RecordService extends Service {
         if (Build.VERSION.SDK_INT >= 26) {
             togglePlay = PendingIntent.getForegroundService(this, 0, actionTogglePlay, FLAG_CANCEL_CURRENT);
             Pause = PendingIntent.getForegroundService(this, 0, actionPause, FLAG_CANCEL_CURRENT);
-        }
-        else {
+        } else {
             togglePlay = PendingIntent.getService(this, 0, actionTogglePlay, FLAG_CANCEL_CURRENT);
             Pause = PendingIntent.getService(this, 0, actionPause, FLAG_CANCEL_CURRENT);
         }
@@ -189,17 +193,17 @@ public class RecordService extends Service {
         remoteViews.setOnClickPendingIntent(R.id.btn_pause, Pause);
         remoteViews.setOnClickPendingIntent(R.id.btn_close, close);
 
-        NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder.build().flags = Notification.FLAG_NO_CLEAR;
-        mNotificationManager.notify(1,mBuilder.build());
-        startForeground(1,mBuilder.build());
+        mNotificationManager.notify(1, mBuilder.build());
+        startForeground(1, mBuilder.build());
     }
 
     private NotificationCompat.Builder createNotification() {
         String channelId = "channel";
         String channelName = "Channel Name";
         notifManager
-                = (NotificationManager) getSystemService (Context.NOTIFICATION_SERVICE);
+                = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_HIGH;
@@ -214,11 +218,11 @@ public class RecordService extends Service {
         return builder;
     }
 
-    public void append(List<String> list) throws IOException{
+    public void append(List<String> list) throws IOException {
         Movie[] inMovies;
         inMovies = new Movie[list.size()];
         try {
-            for (int i = 0; i<list.size();i++) {
+            for (int i = 0; i < list.size(); i++) {
                 inMovies[i] = MovieCreator.build(list.get(i));
             }
         } catch (IOException e) {
@@ -263,7 +267,7 @@ public class RecordService extends Service {
             e.printStackTrace();
         }
 
-        for (int i = 0; i<list.size();i++) {
+        for (int i = 0; i < list.size(); i++) {
             File fl = new File(list.get(i));
             fl.delete();
         }

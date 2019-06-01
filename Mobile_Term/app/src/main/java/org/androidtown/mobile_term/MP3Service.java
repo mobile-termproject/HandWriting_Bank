@@ -13,14 +13,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
-import android.provider.MediaStore;
-import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Toast;
+
+import androidx.core.app.NotificationCompat;
 
 import java.io.File;
 import java.io.FileInputStream;

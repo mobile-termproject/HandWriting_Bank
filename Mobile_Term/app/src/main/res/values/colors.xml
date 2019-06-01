@@ -7,4 +7,7 @@
     <color name="gray">#8C8C8C</color>
     <color name="white">#ffffff</color>
     <color name="JColor">#31485C</color>
+    <color name="ab_color">#356d9e</color>
+    <color name="brush_panel_bg">#66669900</color>
+    <color name="pdf_background">#f2efe8</color>
 </resources>
