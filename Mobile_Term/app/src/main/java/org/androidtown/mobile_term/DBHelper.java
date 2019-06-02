@@ -19,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
         /* 이름은 MONEYBOOK이고, 자동으로 값이 증가하는 _id 정수형 기본키 컬럼과
         item 문자열 컬럼, price 정수형 컬럼, create_at 문자열 컬럼으로 구성된 테이블을 생성.
         db.execSQL("CREATE TABLE PDFWRITING (_id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, price INTEGER, create_at TEXT);");*/
-        db.execSQL("CREATE TABLE PDFWRITING(_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, page INTEGER, picture TEXT);");
+        db.execSQL("CREATE TABLE PDFWRITING(_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, page INTEGER, picture TEXT, testing TEXT);");
     }
 
     // DB 업그레이드를 위해 버전이 변경될 때 호출되는 함수
@@ -28,11 +28,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public void insert(String title, int pagenum, String picture) {
+    public void insert(String title, int pagenum, String picture, String test) {
         // 읽고 쓰기가 가능하게 DB 열기
         SQLiteDatabase db = getWritableDatabase();
         // DB에 입력한 값으로 행 추가
-        db.execSQL("INSERT INTO PDFWRITING VALUES(null, '" + title + "', " + pagenum + ", '" + picture + "');");
+        db.execSQL("INSERT INTO PDFWRITING VALUES(null, '" + title + "', " + pagenum + ", '" + picture + "', '" + test + "');");
         db.close();
     }
 
@@ -50,10 +50,10 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public boolean search(String title) {
+    public boolean search(String title,String test) {
         SQLiteDatabase db = getReadableDatabase();
         //pdf 제목이 같은게 있으면 true 반환 없으면 false반환
-        Cursor cursor = db.rawQuery("SELECT * FROM PDFWRITING WHERE title='" + title + "';", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM PDFWRITING WHERE title =='" + title + "' AND testing='" + test +"';", null);
 
         if(cursor.moveToFirst()){
             cursor.close();
@@ -77,6 +77,7 @@ public class DBHelper extends SQLiteOpenHelper {
             result += cursor.getString(3);
             cursor.close();
         }
+
         Log.i("정보",result);
         return result;
     }

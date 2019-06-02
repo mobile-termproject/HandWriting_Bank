@@ -48,7 +48,6 @@ import java.util.List;
  * @date 2019-05-04
  */
 public class FileList extends AppCompatActivity {
-    public static Activity _FileList;
 
     static boolean isRecording = false;
     static int filecounter = 0;
@@ -56,7 +55,7 @@ public class FileList extends AppCompatActivity {
     static String servicename = null;
     static String recordpath = null;
     static List outputFileList = new ArrayList();
-
+    public static Activity _FileList;
     private Spinner spinner;
     String reqLocation;
     static String FolderName;
@@ -80,6 +79,7 @@ public class FileList extends AppCompatActivity {
     Intent receivedIntent;
     String bookfolderName;
     InputMethodManager imm;
+
     public final static int STATE_PREV = 0;     //녹음 시작 전
     public final static int STATE_RECORDING = 1;    //녹음 중
     public final static int STATE_PAUSE = 2;        // 일시 정지 중
@@ -92,12 +92,7 @@ public class FileList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list);
         _FileList = FileList.this;
-       imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-
-        try {
-            setToolbar();
-        } catch (IOException e) {
-        }
+        imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
         if (!isExternalStorageReadable()) {
             Toast.makeText(this, "Storage access permission not given", Toast.LENGTH_LONG).show();
@@ -131,6 +126,11 @@ public class FileList extends AppCompatActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        try {
+            setToolbar();
+        } catch (IOException e) {
+            ;
         }
         pickFiles = true;
         loadLists(location);
@@ -298,15 +298,13 @@ public class FileList extends AppCompatActivity {
                                     fileinfo(position);
                                     break;
                                 case R.id.pop_test:
-                                    if (folderAndFileList.get(position).getName().contains(".pdf")) {
+                                    if(folderAndFileList.get(position).getName().contains(".pdf")) {
                                         Intent intent = new Intent(FileList.this, TestMake.class);
                                         intent.putExtra("folder", bookfolderName);
                                         intent.putExtra("filename", folderAndFileList.get(position).getName());
-                                        Log.i("정보", folderAndFileList.get(position).getName() + "fillist");
+                                        Log.i("정보",folderAndFileList.get(position).getName()+"fillist" );
                                         intent.putExtra("state", "false");
                                         startActivity(intent);
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), "가능한 파일이 아닙니다.", Toast.LENGTH_LONG).show();
                                     }
                             }
                             return false;
@@ -379,8 +377,10 @@ public class FileList extends AppCompatActivity {
                     "application/haansofthwp");
         }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
         try {
             if (K == 0)
+
                 startActivity(intent);
         } catch (ActivityNotFoundException ex) {
             Toast.makeText(this, "기기에 파일을 열수 있는 어플이 없습니다.", Toast.LENGTH_SHORT).show();
@@ -529,16 +529,13 @@ public class FileList extends AppCompatActivity {
 
     private void fileshare(int position) {
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+        //   intent.setAction(Intent.ACTION_SEND);
         intent.setType("application/*");
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider",
+        intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID+".provider",
                 new File(Environment.getExternalStorageDirectory().getAbsolutePath() + bookfolderName + folderAndFileList.get(position).getName())));
         Intent chooser = Intent.createChooser(intent, "공유하기");
         this.startActivity(chooser);
-    }
-
-    private void makeTest(int position) {
-
     }
 
     public void setToolbar() throws IOException {

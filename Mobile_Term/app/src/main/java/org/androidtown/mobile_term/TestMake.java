@@ -7,10 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -41,41 +39,70 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 public class TestMake extends AppCompatActivity implements OnPageChangeListener, OnLoadCompleteListener, OnDrawListener {
     String FILE_NAME;
+    String FILE_TITLE;
     PDFView pdfView;
     Integer pageNumber = 0;
     String folder;
     Toolbar toolbar;
     Button button;
+    int count;
     private DrawingView mDrawingView;
     private SeekBar mBrushStroke;
     boolean result = true;
     String state;
+    String[] arrayList;
+    DBHelper dbHelper;
+    //static Bitmap bitmap;
+    String testing = "testing";
+    int Pressed = 0; //PDF 뷰어 가 뒤일때 0 앞일 때 1
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawable(Utils.createCheckerBoard(getResources(), 30));
-        setContentView(R.layout.activity_make_test);
+        setContentView(R.layout.activity_test_make);
+
+        dbHelper = new DBHelper(getApplicationContext(), "PDFWRITING.db", null, 1);
 
         Intent intent = getIntent();
-        FILE_NAME = intent.getStringExtra("filename");
-        Log.i("정보",FILE_NAME+"인텐트 넘어옴" );
+        FILE_NAME = intent.getStringExtra("filename"); //파일 이름
         folder = intent.getStringExtra("folder");
-        state = intent.getStringExtra("state");
+        state = intent.getStringExtra("state"); //true가 저장되어 있는 값
+        Log.i("정보",FILE_NAME+"인텐트 넘어옴" );
+
+        pageCount();
+
+        arrayList = new String[count];
+        Arrays.fill(arrayList, "");
+
         mDrawingView = (DrawingView) findViewById(R.id.test_drawingView);
         mDrawingView.setShape(R.drawable.ic_action_undo, R.drawable.ic_action_brush);
 
-        if(state.equals("false"))
+        if(state.equals("true")) {
+            FILE_TITLE = FILE_NAME;
+            for (int i = 0; i < count; i++) {
+                String getvalue = dbHelper.getResult(FILE_TITLE, i);
+                arrayList[i] += getvalue;
+                Log.i("정보", arrayList[i]);
+            }
+            Log.i("정보","테스트 파일 리스트에서 선택했을 떄 값!! 저장하기 기능은 없다");
+        } else {
             mDrawingView.setDrawingColor(Color.WHITE);
+            FILE_TITLE = "[시험지]" + FILE_NAME;
+            Log.i("정보","이건 시험지를 만드는 기능이다.");
+        }
+
+        //if(state.equals("false"))
+
         mBrushStroke = (SeekBar) findViewById(R.id.test_brush_stroke);
         pdfView = (PDFView) findViewById(R.id.test_pdfView);
         toolbar = (Toolbar) findViewById(R.id.test_toolbar);
-        pageCount();
         /*toolbar 설정*/
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
@@ -107,7 +134,7 @@ public class TestMake extends AppCompatActivity implements OnPageChangeListener,
     Button.OnClickListener click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (result) {
+            /*if (result) {
                 mDrawingView.bringToFront();
                 button.setText("시험지 보기");
                 result = false;
@@ -115,8 +142,27 @@ public class TestMake extends AppCompatActivity implements OnPageChangeListener,
                 pdfView.bringToFront();
                 button.setText("정답 확인");
                 result = true;
-            }
+            }*/
+            if (result) {
+                mDrawingView.bringToFront();
+                button.setText("정답 확인");
+                result = false;
+                Pressed = 0;
+            } else {
+                pdfView.bringToFront();
+                result = true;
+                button.setText("시험지 보기");
+                mDrawingView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+                mDrawingView.setDrawingCacheEnabled(true);
+                mDrawingView.buildDrawingCache();
+                Bitmap viewCache = mDrawingView.getDrawingCache();
+                PDFActivity.bitmap = viewCache.copy(viewCache.getConfig(), false);
+                mDrawingView.setDrawingCacheEnabled(false);
 
+                String image = Convert.bitmapToString(getApplicationContext(), PDFActivity.bitmap);
+                arrayList[pageNumber] = image;
+                Pressed = 1;
+            }
         }
     };
 
@@ -126,10 +172,13 @@ public class TestMake extends AppCompatActivity implements OnPageChangeListener,
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.test_toolbar, menu);
         MenuItem item = menu.findItem(R.id.action_edit_button);
+
+
         button = (Button) item.getActionView();
         button.setText("시험지보기");
         button.setOnClickListener(click);
-
+        button.setBackgroundColor(getResources().getColor(R.color.JColor));
+        button.setTextColor(Color.WHITE);
         if (state.equals("true")) {
             MenuItem a = menu.findItem(R.id.action_draw);
             a.setVisible(false);
@@ -153,7 +202,7 @@ public class TestMake extends AppCompatActivity implements OnPageChangeListener,
             ParcelFileDescriptor fd = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
             PdfiumCore pdfiumCore = new PdfiumCore(getApplicationContext());
             PdfDocument pdfDocument = pdfiumCore.newDocument(fd);
-            int count = pdfiumCore.getPageCount(pdfDocument);
+            count = pdfiumCore.getPageCount(pdfDocument);
             Log.i("정보", count + "count");
         } catch (IOException e) {
             e.printStackTrace();
@@ -169,8 +218,14 @@ public class TestMake extends AppCompatActivity implements OnPageChangeListener,
             case R.id.action_draw: //굵기
                 if (strokeResult) {
                     mBrushStroke.bringToFront();
+                    mBrushStroke.setVisibility(View.VISIBLE);
                     mDrawingView.bringToFront();
                     //  strokeResult = false;
+                    strokeResult = false;
+                }
+                else{
+                    mBrushStroke.setVisibility(View.INVISIBLE);
+                    strokeResult = true;
                 }
                 return true;
             case R.id.action_eraser:
@@ -184,13 +239,26 @@ public class TestMake extends AppCompatActivity implements OnPageChangeListener,
                 mDrawingView.redoOperation();
                 return true;
             case R.id.action_save:  //이미지 저장하는곳
-                mDrawingView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-                mDrawingView.setDrawingCacheEnabled(true);
-                mDrawingView.buildDrawingCache();
-                Bitmap viewCache = mDrawingView.getDrawingCache();
-                Bitmap bitmap = viewCache.copy(viewCache.getConfig(), false);
-                mDrawingView.setDrawingCacheEnabled(false);
-                new SaveTask().execute(bitmap);
+                if (Pressed == 0) {
+                    mDrawingView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+                    mDrawingView.setDrawingCacheEnabled(true);
+                    mDrawingView.buildDrawingCache();
+                    Bitmap viewCache = mDrawingView.getDrawingCache();
+                    PDFActivity.bitmap = viewCache.copy(viewCache.getConfig(), false);
+                    mDrawingView.setDrawingCacheEnabled(false);
+
+                    String image = Convert.bitmapToString(getApplicationContext(), PDFActivity.bitmap);
+                    //Log.i("정보",0+"번 칸에 비트맵 이미지가 저장되었습니다.");
+                    arrayList[pageNumber] = image;
+                }
+
+                dbHelper.delete(FILE_TITLE);
+                for (int i = 0; i < count; i++) {
+                    dbHelper.insert(FILE_TITLE, i, arrayList[i],testing);
+                    Log.i("정보", i + "값이 들어감");
+                }
+
+                new SaveTask().execute(PDFActivity.bitmap);
 
                 return true;
             case R.id.action_cancel:
@@ -215,11 +283,7 @@ public class TestMake extends AppCompatActivity implements OnPageChangeListener,
         @Override
         protected void onPostExecute(File result) {
             mProgressDialog.dismiss();
-            if (result != null) {
-                Toast.makeText(TestMake.this, getString(R.string.saved_as) +
-                        result.getName(), Toast.LENGTH_LONG).show();
-                check();
-            }
+            check();
         }
 
         @SuppressLint("SimpleDateFormat")
@@ -227,30 +291,7 @@ public class TestMake extends AppCompatActivity implements OnPageChangeListener,
         protected File doInBackground(Bitmap... params) {
             String name = new SimpleDateFormat("'Painter_'yyyy-MM-dd_HH-mm-ss.S'.png'").format(new Date());
             File result = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), name);
-
-            FileOutputStream stream = null;
-            try {
-                try {
-                    stream = new FileOutputStream(result);
-                    if (params[0].compress(CompressFormat.PNG, 75, stream)) {
-                        sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(result)));
-                    } else {
-                        result = null;
-                    }
-                } finally {
-                    if (stream != null) {
-                        stream.close();
-                    }
-                }
-            } catch (IOException e) {
-                result = null;
-            }
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                //
-            }
+            result = null;
             return result;
         }
     }
@@ -359,7 +400,31 @@ public class TestMake extends AppCompatActivity implements OnPageChangeListener,
 
     @Override
     public void onPageChanged(int page, int pageCount) {
+        if (pageNumber != page) {
+            if (arrayList[page].equals("")) {
+                Log.i("정보", "기존값 없음");
+                PDFActivity.num = 0;
+            } else {
+                PDFActivity.num = 2;
+                Log.i("정보", "기존값 있음");
+                PDFActivity.bitmap = Convert.stringToBitmap(arrayList[page]);
+                //Log.i("정보",testArray[page]);
+            }
+        } else {
+            if (arrayList[page].equals("")) {
+                PDFActivity.num = 0;
+                Log.i("정보", "기존값 없음");
+            } else {
+                PDFActivity.num = 2;
+                Log.i("정보", "기존값 있음");
+                PDFActivity.bitmap = Convert.stringToBitmap(arrayList[0]);
+                //Log.i("정보",testArray[0]);
+            }
+        }
         pageNumber = page;
+
+        mDrawingView.clearDrawing();
+        mDrawingView.setShape(R.drawable.inner, R.drawable.outer);
     }
 
 
@@ -367,7 +432,6 @@ public class TestMake extends AppCompatActivity implements OnPageChangeListener,
     public void loadComplete(int nbPages) {
         PdfDocument.Meta meta = pdfView.getDocumentMeta();
         printBookmarksTree(pdfView.getTableOfContents(), "-");
-
     }
 
     @Override

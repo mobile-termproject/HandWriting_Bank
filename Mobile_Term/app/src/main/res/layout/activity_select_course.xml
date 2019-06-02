@@ -20,8 +20,9 @@
             android:id="@+id/title_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="14dp"
             android:text="수강목록 불러오기"
+            android:fontFamily="@font/bing2"
             android:textColor="@android:color/white"
             android:textSize="25sp" />
 
@@ -45,41 +46,48 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:paddingBottom="1dp">
+        android:paddingBottom="5dp"
+        android:paddingRight="10dp"
+        android:backgroundTint="@color/white">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
 
         <Button
-            android:layout_marginLeft="10dp"
             android:id="@+id/selectAll"
-            android:layout_width="wrap_content"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:background="@color/JColor"
-            android:textColor="@android:color/white"
-            android:text="전체 선택"/>
+            android:background="#00ffffff"
+            android:textColor="@color/colorAccent"
+            android:fontFamily="@font/bing2"
+            android:text="전체 선택"
+            android:textSize="15dp"/>
 
         <Button
-            android:layout_marginLeft="10dp"
             android:id="@+id/cancel"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:background="@color/JColor"
+            android:background="#00ffffff"
             android:text="취소"
-            android:layout_toRightOf="@+id/selectAll"
-            android:textColor="@android:color/white" />
+            android:fontFamily="@font/bing2"
+            android:textColor="@color/colorAccent"
+            android:textSize="15dp"/>
 
         <Button
             android:id="@+id/add"
-            android:layout_marginLeft="10dp"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:background="@color/JColor"
-            android:textColor="@android:color/white"
-            android:layout_toRightOf="@+id/cancel"
+            android:background="#00ffffff"
             android:text="확인"
-            android:layout_marginRight="10dp"/>
-    </RelativeLayout>
+            android:fontFamily="@font/bing2"
+            android:textColor="@color/colorAccent"
+            android:textSize="15dp"/>
+    </LinearLayout>
 
 </LinearLayout>

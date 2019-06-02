@@ -1,11 +1,11 @@
 package org.androidtown.mobile_term;
 
 public class Book {
-    private  String name;
+    private String name;
     private int imgno;
-    private  int picnum;
+    private int picnum;
 
-    public Book (String name, int imgno, int picnum) {
+    public Book(String name, int imgno, int picnum) {
         this.name = name;
         this.imgno = imgno;
         this.picnum = picnum;

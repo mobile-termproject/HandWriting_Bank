@@ -1,33 +1,23 @@
 package org.androidtown.mobile_term;
 
-import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
-import android.provider.DocumentsContract;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,21 +35,20 @@ import com.shockwave.pdfium.PdfDocument;
 import com.shockwave.pdfium.PdfiumCore;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 public class PDFActivity extends AppCompatActivity implements OnPageChangeListener, OnLoadCompleteListener, OnDrawListener, ColorPickerDialogListener {
+
     public static int startbrush = 0;
     String FILE_NAME;
+    String FILE_TITLE;
     PDFView pdfView;
     int pageNumber = 0;
     String folder;
@@ -69,10 +58,12 @@ public class PDFActivity extends AppCompatActivity implements OnPageChangeListen
     private SeekBar mBrushStroke;
     private SharedPreferences preferences;
     private int selectedColor;
-    //ArrayList<String> arrayList = new ArrayList<>();
     String[] arrayList;
-    String[] testArray;
+    int State = -1; //만약 DB가 이미 존재하면 0 존재하지 않아서 새로 생성한다면 1
+    int Pressed = 0; //PDF 뷰어 가 뒤일때 0 앞일 때 1
 
+    DBHelper dbHelper;
+    String testing = "writing";
     int count;
     static Bitmap bitmap;
     static int num = 0;
@@ -86,6 +77,9 @@ public class PDFActivity extends AppCompatActivity implements OnPageChangeListen
         Intent intent = getIntent();
         FILE_NAME = intent.getStringExtra("name");
         folder = intent.getStringExtra("folder");
+        FILE_TITLE = FILE_NAME;
+        Log.i("정보", "파일 이름" + FILE_TITLE);
+        dbHelper = new DBHelper(getApplicationContext(), "PDFWRITING.db", null, 1);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         mDrawingView = (DrawingView) findViewById(R.id.drawingView);
@@ -95,11 +89,26 @@ public class PDFActivity extends AppCompatActivity implements OnPageChangeListen
         mBrushStroke = (SeekBar) findViewById(R.id.brush_stroke);
         pdfView = (PDFView) findViewById(R.id.pdfView);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         pageCount();
+
+        //Log.i("정보","삭제되었습니다");
+
         arrayList = new String[count];
-        Arrays.fill(arrayList,"");
-        testArray = new String[count];
-        Arrays.fill(testArray,"");
+        Arrays.fill(arrayList, "");
+        //dbHelper.delete(FILE_TITLE);
+        if (dbHelper.search(FILE_TITLE, testing)) { // db에 내용이 있음
+            for (int i = 0; i < count; i++) {
+                Log.i("정보", "반복문 입성");
+                String getvalue = dbHelper.getResult(FILE_TITLE, i);
+                Log.i("정보", "스트링저장");
+                arrayList[i] += getvalue;
+                Log.i("정보", arrayList[i]);
+            }
+            State = 0;
+        } else { //db에 내용 없음
+            State = 1;
+        }
         /*toolbar 설정*/
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
@@ -132,21 +141,11 @@ public class PDFActivity extends AppCompatActivity implements OnPageChangeListen
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.pdf_toolbar, menu);
-        MenuItem item = menu.findItem(R.id.action_spinner);
-        spinner = (Spinner) item.getActionView();
-        int[] spinnerImages = new int[]{
-                R.drawable.ic_fiber_manual_record_black_24dp
-                , R.drawable.ic_edit_black_24dp
-                , R.drawable.ic_edit_green_24dp};
-        HighlightAdapter adapter = new HighlightAdapter(this, spinnerImages);
-        adapter.setDropDownViewResource(R.layout.dropdown_highlight);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(onItemSelectedListener);
         return super.onCreateOptionsMenu(menu) | true;
     }
 
     public void pageCount() {
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + FILE_NAME);
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + folder + "/" + FILE_NAME);
         try {
             ParcelFileDescriptor fd = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
             PdfiumCore pdfiumCore = new PdfiumCore(getApplicationContext());
@@ -158,35 +157,6 @@ public class PDFActivity extends AppCompatActivity implements OnPageChangeListen
         }
     }
 
-    /*형광펜*/
-    AdapterView.OnItemSelectedListener onItemSelectedListener = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> adapter, View v, int i, long lng) {
-            if (i == 0) {
-                if (startbrush == 0) {
-                    mDrawingView.setDrawingColor(Color.BLACK);
-                    pdfView.bringToFront();
-                    startbrush++;
-                } else {
-                    mDrawingView.setDrawingColor(Color.parseColor("#5EFFF800"));
-                    mDrawingView.bringToFront();
-                }
-            } else if (i == 1) {
-                mDrawingView.setDrawingColor(Color.parseColor("#3111FF00"));
-                mDrawingView.bringToFront();
-            } else if (i == 2) {
-                mDrawingView.setDrawingColor(Color.parseColor("#2CFF02F2"));
-                mDrawingView.bringToFront();
-            }
-            mDrawingView.bringToFront();
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> arg0) {
-            // Do nothing
-        }
-    };
-
     boolean result = true;
     boolean strokeResult = true;
 
@@ -197,9 +167,12 @@ public class PDFActivity extends AppCompatActivity implements OnPageChangeListen
             case R.id.action_edit_button: //이거눌러야지 편집 가능
                 if (result) {
                     mDrawingView.bringToFront();
+                    item.setIcon(getResources().getDrawable(R.drawable.edit_icon));
                     result = false;
+                    Pressed = 0;
                 } else {
                     pdfView.bringToFront();
+                    item.setIcon(getResources().getDrawable(R.drawable.edit_icon2));
                     result = true;
 
                     mDrawingView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
@@ -210,22 +183,26 @@ public class PDFActivity extends AppCompatActivity implements OnPageChangeListen
                     mDrawingView.setDrawingCacheEnabled(false);
 
                     String image = Convert.bitmapToString(getApplicationContext(), bitmap);
-                    //Log.i("정보",0+"번 칸에 비트맵 이미지가 저장되었습니다.");
                     arrayList[pageNumber] = image;
-                    testArray[pageNumber] = pageNumber + "번째 배열";
+                    Pressed = 1;
                 }
                 return true;
             case R.id.action_draw: //굵기
                 if (strokeResult) {
                     mBrushStroke.bringToFront();
+                    mBrushStroke.setVisibility(View.VISIBLE);
                     mDrawingView.bringToFront();
                     //  strokeResult = false;
+                    strokeResult = false;
+                }
+                else{
+                    mBrushStroke.setVisibility(View.INVISIBLE);
+                    strokeResult = true;
                 }
                 return true;
             case R.id.action_brush:
                 showColorPickerDialog();
                 mDrawingView.bringToFront();
-                //   mBrushStroke.bringToFront();
                 result = false;
                 return true;
             case R.id.action_eraser:
@@ -240,24 +217,34 @@ public class PDFActivity extends AppCompatActivity implements OnPageChangeListen
                 return true;
             case R.id.action_save: { //이미지 저장하는곳
 
-                for (int i = 0; i<count; i++) {
-                    Log.i("정보", i + "번째" + arrayList[i]);
+                if (Pressed == 0) {
+                    mDrawingView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+                    mDrawingView.setDrawingCacheEnabled(true);
+                    mDrawingView.buildDrawingCache();
+                    Bitmap viewCache = mDrawingView.getDrawingCache();
+                    bitmap = viewCache.copy(viewCache.getConfig(), false);
+                    mDrawingView.setDrawingCacheEnabled(false);
+
+                    String image = Convert.bitmapToString(getApplicationContext(), bitmap);
+                    //Log.i("정보",0+"번 칸에 비트맵 이미지가 저장되었습니다.");
+                    arrayList[pageNumber] = image;
                 }
-                /*mDrawingView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-                mDrawingView.setDrawingCacheEnabled(true);
-                mDrawingView.buildDrawingCache();
-                Bitmap viewCache = mDrawingView.getDrawingCache();
-                bitmap = viewCache.copy(viewCache.getConfig(), false);
-                mDrawingView.setDrawingCacheEnabled(false);
 
-                String image = Convert.bitmapToString(this, bitmap);
+                if (State == 1) {
+                    for (int i = 0; i < count; i++) {
+                        dbHelper.insert(FILE_TITLE, i, arrayList[i],testing);
+                        Log.i("정보", i + "값이 들어감");
+                    }
+                } else if (State == 0) {
+                    dbHelper.delete(FILE_TITLE);
+                    for (int i = 0; i < count; i++) {
+                        Log.i("정보", "업데이트 들어감");
+                        dbHelper.insert(FILE_TITLE, i, arrayList[i],testing);
+                        Log.i("정보", "업데이트 하나 받아옴");
+                    }
+                }
 
-                num = 2;
-                Intent intent = new Intent(this,Testing.class);
-                intent.putExtra("image",image);
-                startActivity(intent);*/
-
-                //new SaveTask().execute(bitmap);
+                finish();
             }
             return true;
             case R.id.action_cancel:
@@ -267,14 +254,15 @@ public class PDFActivity extends AppCompatActivity implements OnPageChangeListen
             default:
                 return super.onOptionsItemSelected(item);
         }
-
-
     }
 
+
+    boolean selectResult = false;
     /*color picker 색깔 선택*/
     @Override
     public void onColorSelected(int dialogId, @ColorInt int color) {
         selectedColor = color;
+        selectResult = true;
         mDrawingView.setDrawingColor(Color.parseColor(toHex(color)));
         if (!arrayContains(ColorPickerDialog.MATERIAL_COLORS, color)) {
             // add the custom color to shared preferences so we can use it in the presets later
@@ -289,6 +277,10 @@ public class PDFActivity extends AppCompatActivity implements OnPageChangeListen
 
     @Override
     public void onDialogDismissed(int dialogId) {
+        if(selectResult == false){
+            selectedColor = Color.BLACK;
+        }
+
 
     }
 
@@ -338,61 +330,8 @@ public class PDFActivity extends AppCompatActivity implements OnPageChangeListen
         return false;
     }
 
-    private class SaveTask extends AsyncTask<Bitmap, Void, File> {
-        private ProgressDialog mProgressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            mProgressDialog = new ProgressDialog(PDFActivity.this);
-            mProgressDialog.setMessage(getString(R.string.saving));
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.show();
-        }
-
-        @Override
-        protected void onPostExecute(File result) {
-            mProgressDialog.dismiss();
-            if (result != null) {
-                Toast.makeText(PDFActivity.this, getString(R.string.saved_as) +
-                        result.getName(), Toast.LENGTH_LONG).show();
-            }
-        }
-
-        @SuppressLint("SimpleDateFormat")
-        @Override
-        protected File doInBackground(Bitmap... params) {
-            String name = new SimpleDateFormat("'Painter_'yyyy-MM-dd_HH-mm-ss.S'.png'").format(new Date());
-            File result = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), name);
-
-            FileOutputStream stream = null;
-            try {
-                try {
-                    stream = new FileOutputStream(result);
-                    if (params[0].compress(CompressFormat.PNG, 75, stream)) {
-                        sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(result)));
-                    } else {
-                        result = null;
-                    }
-                } finally {
-                    if (stream != null) {
-                        stream.close();
-                    }
-                }
-            } catch (IOException e) {
-                result = null;
-            }
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                //
-            }
-            return result;
-        }
-    }
-
     private void displayFromAsset_landscape(String pdfFileName, String folder) {
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+ folder+ "/"+ FILE_NAME);
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + folder + "/" + pdfFileName);
         pdfView.fromFile(file)
                 .defaultPage(pageNumber)
                 .enableSwipe(true)
@@ -410,53 +349,39 @@ public class PDFActivity extends AppCompatActivity implements OnPageChangeListen
         pdfView.setBackgroundColor(getResources().getColor(R.color.pdf_background));
     }
 
+
     @Override
     public void onPageChanged(int page, int pageCount) {
-        Log.i("정보","받아온 page 값 : " + page);
-        if(pageNumber != page) {
-            if(arrayList[page].equals("")) {
-                Log.i("정보","기존값 없음");
-                num = 0;
+        Log.i("정보", "받아온 page 값 : " + page);
 
+        if (pageNumber != page) {
+
+            if (arrayList[page].equals("")) {
+                Log.i("정보", "기존값 없음");
+                num = 0;
             } else {
                 num = 2;
-                Log.i("정보","기존값 있음");
+                Log.i("정보", "기존값 있음");
                 bitmap = Convert.stringToBitmap(arrayList[page]);
-                Log.i("정보",testArray[page]);
+                //Log.i("정보",testArray[page]);
             }
-        }
-        else {
-            if(arrayList[page].equals("")) {
+        } else {
+            if (arrayList[page].equals("")) {
                 num = 0;
-            }
-            else {
-
+                Log.i("정보", "기존값 없음");
+            } else {
                 num = 2;
-                Log.i("정보","기존값 있음");
+                Log.i("정보", "기존값 있음");
                 bitmap = Convert.stringToBitmap(arrayList[0]);
-                Log.i("정보",testArray[0]);
+                //Log.i("정보",testArray[0]);
             }
         }
-        /*mDrawingView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-                mDrawingView.setDrawingCacheEnabled(true);
-                mDrawingView.buildDrawingCache();
-                Bitmap viewCache = mDrawingView.getDrawingCache();
-                bitmap = viewCache.copy(viewCache.getConfig(), false);
-                mDrawingView.setDrawingCacheEnabled(false);
-
-        String image = Convert.bitmapToString(this, bitmap);
-        if(pageNumber != 0)
-            arrayList[pageNumber - 1] = image;
-        mDrawingView.clearDrawing();
-        mDrawingView.setShape(R.drawable.ic_action_undo, R.drawable.ic_action_brush);
-        mDrawingView.setDrawingColor(Color.BLACK);*/
 
         pageNumber = page;
 
-
         mDrawingView.clearDrawing();
-        mDrawingView.setShape(R.drawable.ic_action_undo, R.drawable.ic_action_brush);
-        mDrawingView.setDrawingColor(Color.BLACK);
+        //mDrawingView.setShape(R.drawable.ic_action_undo, R.drawable.ic_action_brush);
+        mDrawingView.setShape(R.drawable.inner, R.drawable.outer);
     }
 
 

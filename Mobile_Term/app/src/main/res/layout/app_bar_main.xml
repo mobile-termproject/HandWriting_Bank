@@ -16,16 +16,16 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_alignParentTop="true"
-            android:background="@color/white">
+            android:background="@color/JColor">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="필기뱅크"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="28sp"
-                android:textStyle="italic" />
+                android:fontFamily="@font/mainfont" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="25dp"
-        app:backgroundTint="@color/white"
-        app:srcCompat="@drawable/add" />
+        app:backgroundTint="@color/JColor"
+        app:srcCompat="@drawable/add2" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

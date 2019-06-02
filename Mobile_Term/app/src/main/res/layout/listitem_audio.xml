@@ -9,7 +9,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:scaleType="fitXY"
-        android:src="@drawable/empty_albumart"/>
+        android:src="@drawable/empty_albumart2"/>
 
     <LinearLayout
         android:layout_width="0dp"

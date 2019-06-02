@@ -5,7 +5,7 @@
     <item
         android:id="@id/action_edit_button"
         android:title="edit"
-        android:icon="@drawable/edit_icon"
+        android:icon="@drawable/edit_icon2"
 		app:showAsAction="always"
         />
 	<item
@@ -16,13 +16,7 @@
 	<item
 		android:id="@id/action_draw"
 		android:title="stroke"
-		android:icon="@drawable/ic_action_brush"
-		app:showAsAction="always" />
-	<item
-		android:id="@id/action_spinner"
-		android:title="colorPicker"
-		android:icon="@drawable/ic_fiber_manual_record_black_24dp"
-		app:actionViewClass="android.widget.Spinner"
+		android:icon="@drawable/paintbrush"
 		app:showAsAction="always" />
 	<item
 		android:id="@id/action_eraser"

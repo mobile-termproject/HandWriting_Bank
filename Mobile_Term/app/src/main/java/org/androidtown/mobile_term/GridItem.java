@@ -16,10 +16,10 @@ public class GridItem extends LinearLayout {
     }
 
     private void init(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.gridview_item,this);
+        LayoutInflater.from(context).inflate(R.layout.gridview_item, this);
 
-        tx1 = (TextView)findViewById(R.id.book_name);
-        img = (ImageView)findViewById(R.id.book_img);
+        tx1 = (TextView) findViewById(R.id.book_name);
+        img = (ImageView) findViewById(R.id.book_img);
     }
 
     public void setData(Book one) {

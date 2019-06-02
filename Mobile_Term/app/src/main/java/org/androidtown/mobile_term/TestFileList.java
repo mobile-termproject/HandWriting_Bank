@@ -1,6 +1,5 @@
 package org.androidtown.mobile_term;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -8,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,8 +22,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -13,7 +13,7 @@
         android:layout_height="50dp"
         android:layout_marginLeft="5dp"
         android:scaleType="fitXY"
-        android:src="@drawable/empty_albumart"/> />
+        android:src="@drawable/empty_albumart2"/> />
 
     <TextView
         android:textSize="20dp"
@@ -25,7 +25,8 @@
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:text="Sample Title"
-        android:textColor="@android:color/black"/>
+        android:textColor="@android:color/black"
+        android:singleLine="true"/>
 
     <ImageButton
         android:layout_margin="10dp"
@@ -44,7 +45,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:background="@null"
-        android:src="@drawable/pause"/>
+        android:src="@drawable/stoppause"/>
 
     <ImageButton
         android:layout_margin="10dp"
@@ -54,4 +55,6 @@
         android:layout_height="40dp"
         android:background="@null"
         android:src="@drawable/close"/>
+
+
 </LinearLayout>

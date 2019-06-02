@@ -19,12 +19,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         tools:replace="android:appComponentFactory">
-        <activity android:name=".TestMake"
-            android:theme="@style/playTheme" ></activity>
-        <activity android:name=".QRImage" />
-        <activity android:name=".TestFileList"
+        <activity android:name=".App_intro"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".TestMake"
+            android:theme="@style/playTheme" />
+        <activity
+            android:name=".TestFileList"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
         <activity
             android:name=".Gachon_Login"
             android:theme="@style/popupTheme" />
@@ -32,6 +41,8 @@
             android:name=".SplashLogin"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -39,18 +50,9 @@
             android:name=".select_course"
             android:theme="@style/popupTheme" />
         <activity
-            android:name=".SplashMain"
-            android:screenOrientation="portrait"
-            android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".PDFActivity"
-            android:theme="@style/playTheme"></activity>
+            android:theme="@style/playTheme" />
+
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
@@ -78,6 +80,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider" />
         </provider>
+
         <service
             android:name=".MP3Service"
             android:enabled="true">

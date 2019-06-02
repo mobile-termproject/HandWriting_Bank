@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
-    android:layout_height="250dp"
+    android:layout_height="280dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
     android:orientation="vertical"
     android:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -20,6 +20,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="가천대 로그인"
+            android:fontFamily="@font/bing2"
+            android:layout_marginTop="5dp"
             android:textStyle="bold"
             android:textColor="@android:color/white"
             android:textSize="25sp" />
@@ -27,54 +29,101 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="140dp"
+        android:layout_height="170dp"
         android:gravity="center_horizontal"
         android:id="@+id/addinfo"
-        android:padding="10dp">
+        android:padding="30dp">
+
+        <TextView
+            android:layout_marginTop="13dp"
+            android:layout_width="40dp"
+            android:layout_height="38dp"
+            android:textSize="16dp"
+            android:text="ID :"
+            android:fontFamily="@font/bing2"
+            android:id="@+id/txtid"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_marginTop="13dp"
+            android:textSize="16dp"
+            android:gravity="left"
+            android:layout_alignRight="@id/txtid"
+            android:layout_below="@+id/txtid"
+            android:layout_width="40dp"
+            android:fontFamily="@font/bing2"
+            android:layout_height="38dp"
+            android:text="PW :"
+            android:id="@+id/txtpw"/>
 
         <EditText
+            android:layout_alignBottom="@id/txtid"
             android:id="@+id/type_id"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:ems="30"
+            android:layout_toRightOf="@+id/txtid"
             android:hint="ID"
+            android:textSize="13dp"
+            android:fontFamily="@font/bing2"
             android:paddingTop="20dp"
-            android:inputType="text" />
+            android:paddingLeft="2dp"
+            android:inputType="text"
+            />
 
         <EditText
             android:id="@+id/type_password"
+            android:layout_alignBottom="@id/txtpw"
+            android:layout_below="@+id/type_id"
+            android:layout_marginTop="10dp"
+            android:textSize="13dp"
+            android:hint="Password"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/type_id"
+            android:paddingLeft="2dp"
             android:layout_centerHorizontal="true"
             android:ems="30"
-            android:hint="Password"
-            android:inputType="textPassword" />
+            android:theme="@style/ThemeEditTextLight"
+            android:layout_toRightOf="@+id/txtpw"
+            android:fontFamily="@font/bing2"
+            android:inputType="textPassword"/>
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:paddingBottom="5dp">
+        android:paddingBottom="5dp"
+        android:paddingRight="10dp"
+        android:backgroundTint="@color/white">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
 
         <Button
             android:id="@+id/cancelBt"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:background="@color/JColor"
             android:text="취소"
-            android:textColor="@android:color/white" />
+            android:textSize="15dp"
+            android:fontFamily="@font/bing2"
+            android:textColor="@color/colorAccent"
+            android:background="#00ffffff"
+            />
 
         <Button
             android:id="@+id/loginBt"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:background="@color/JColor"
+            android:layout_gravity="right"
+            android:fontFamily="@font/bing2"
             android:text="로그인"
-            android:textColor="@android:color/white" />
+            android:textSize="15dp"
+            android:background="#00ffffff"
+            android:textColor="@color/colorAccent" />
     </LinearLayout>
 
 </LinearLayout>

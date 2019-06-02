@@ -31,6 +31,7 @@
             android:layout_weight="1"
             android:background="@color/JColor"
             android:text="전체선택"
+            android:fontFamily="@font/mainfont"
             android:textColor="@color/white" />
 
         <Button
@@ -40,6 +41,7 @@
             android:layout_weight="1"
             android:background="@color/JColor"
             android:text="확인"
+            android:fontFamily="@font/mainfont"
             android:textColor="@color/white" />
 
         <Button
@@ -49,6 +51,7 @@
             android:background="@color/JColor"
             android:onClick="cancel"
             android:text="취소"
+            android:fontFamily="@font/mainfont"
             android:textColor="@color/white" />
 
     </LinearLayout>

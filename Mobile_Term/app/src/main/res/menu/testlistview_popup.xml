@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <item
+        android:id="@+id/pop_name_change"
+        android:title="이름 변경"
+        android:icon="@android:drawable/ic_menu_save" />
+    <item
+        android:id="@+id/pop_delete"
+        android:title="삭제"
+        android:icon="@android:drawable/ic_menu_search" />
+    <item
+        android:id="@+id/pop_share"
+        android:title="공유"
+        android:icon="@android:drawable/ic_menu_edit" />
+    <item
+        android:id="@+id/pop_info"
+        android:title="상세정보"
+        android:icon="@android:drawable/ic_menu_edit" />
+</menu>

@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:background="@color/JColor"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -14,8 +15,7 @@
             android:id="@+id/toolbar2"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:layout_alignParentTop="true"
-            android:background="@color/JColor">
+            android:layout_alignParentTop="true">
 
             <TextView
                 android:id="@+id/folder_text"

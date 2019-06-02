@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -7,20 +7,24 @@
     android:gravity="center">
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         app:srcCompat="@drawable/book"
         android:id="@+id/book_img"/>
 
     <TextView
         android:id="@+id/book_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_width="85dp"
+        android:layout_height="90dp"
         android:layout_gravity="center"
-        android:textSize="20dp"
-        android:text="책 이름"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="12dp"
         android:ellipsize="end"
-        android:singleLine="true"/>
+        android:gravity="center"
+        android:singleLine="false"
+        android:text="책 이름"
+        android:fontFamily="@font/bing2"
+        android:textSize="16dp" />
 
-</LinearLayout>
+</FrameLayout>

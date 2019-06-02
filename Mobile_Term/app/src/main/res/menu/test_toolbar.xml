@@ -10,7 +10,7 @@
     <item
         android:id="@id/action_draw"
         android:title="stroke"
-        android:icon="@drawable/ic_action_brush"
+        android:icon="@drawable/paintbrush"
         app:showAsAction="always" />
     <item
         android:id="@id/action_eraser"

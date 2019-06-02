@@ -8,12 +8,9 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.os.Environment;
 import android.os.IBinder;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -27,7 +24,6 @@ import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -49,10 +45,10 @@ public class RecordService extends Service {
     NotificationCompat.Builder mBuilder;
     int State = 0;
     int Pause_state = 0;
-/*날짜 셋팅*/
+    /*날짜 셋팅*/
     long mNow;
     Date mDate;
-    Context mContext;
+    RemoteViews remoteViews;
     SimpleDateFormat mFormat = new SimpleDateFormat("yyMMdd-HH:mm");
 
     @Override
@@ -71,6 +67,9 @@ public class RecordService extends Service {
             State = 1;
             showCustomNotification();
         } else if (intent.getAction().equals(CommandActions.CLOSERECORD)) {
+            remoteViews.setBoolean(R.id.btn_record, "setEnabled", false);
+            remoteViews.setBoolean(R.id.btn_pause, "setEnabled", false);
+            remoteViews.setBoolean(R.id.btn_close, "setEnabled", false);
             stopSelf();
             notifManager.cancelAll();
         }
@@ -154,7 +153,7 @@ public class RecordService extends Service {
     private void showCustomNotification() {
         mBuilder = createNotification();
 
-        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification_record);
+        remoteViews = new RemoteViews(getPackageName(), R.layout.notification_record);
         remoteViews.setTextViewText(R.id.txt_title, "녹음중");
         if (State == 0) {//record 버튼 안눌리게
             remoteViews.setImageViewResource(R.id.btn_record, R.drawable.stoprecord);

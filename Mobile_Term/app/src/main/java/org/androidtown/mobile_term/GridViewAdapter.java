@@ -17,7 +17,7 @@ public class GridViewAdapter extends BaseAdapter {
     }
 
     @Override
-    public  int getCount(){
+    public int getCount() {
         return book.size();
     }
 
@@ -33,10 +33,10 @@ public class GridViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if(convertView == null)
+        if (convertView == null)
             convertView = new GridItem(context);
 
-        ((GridItem)convertView).setData(book.get(position));
+        ((GridItem) convertView).setData(book.get(position));
 
         return convertView;
     }

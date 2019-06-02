@@ -4,7 +4,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/JColor</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
@@ -13,9 +13,17 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="ThemeEditTextLight">
+        <!-- text color -->
+        <item name="android:textColor">#000000</item>
+        <!-- hint text color -->
+        <item name="android:textColorHint">#BDBDBD</item>
+        <item name="android:textColorPrimary">@color/JColor</item>
+    </style>
+
     <style name="popupTheme" parent="Theme.AppCompat.DayNight.Dialog">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/JColor</item>
         <item name="colorAccent">@color/colorAccent</item>
 
         <!--타이틀 바 제거-->
@@ -32,10 +40,9 @@
         <item name="android:windowBackground">@drawable/splash_main</item>
     </style>
     <style name="playTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="colorPrimary">@color/ab_color</item>
-    <item name="colorPrimaryDark">@color/ab_color</item>
-    <item name="colorAccent">@color/ab_color</item>
+    <item name="colorPrimary">@color/JColor</item>
+    <item name="colorPrimaryDark">@color/JColor</item>
+    <item name="colorAccent">@color/JColor</item>
     </style>
-    <style name="action" parent="Theme.AppCompat.Light.NoActionBar">
-    </style>
+
 </resources>

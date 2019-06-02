@@ -5,12 +5,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
@@ -23,7 +19,6 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class MP3Service extends Service {
 
@@ -54,7 +49,7 @@ public class MP3Service extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String ext = Environment.getExternalStorageState();
-        if(ext.equals(Environment.MEDIA_MOUNTED)) {
+        if (ext.equals(Environment.MEDIA_MOUNTED)) {
             path = FileList.servicepath;
             filename = FileList.servicename;
 
@@ -69,7 +64,7 @@ public class MP3Service extends Service {
                 showCustomNotification();
             } else if (intent.getAction().equals(CommandActions.PLAY)) {
                 state = 0;
-                if(mediaPlayer.isPlaying())
+                if (mediaPlayer.isPlaying())
                     mediaPlayer.pause();
                 else
                     mediaPlayer.start();
@@ -93,7 +88,7 @@ public class MP3Service extends Service {
                 mediaPlayer.setDataSource(path);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -108,7 +103,7 @@ public class MP3Service extends Service {
                 mediaPlayer.setDataSource(fis.getFD());
                 mediaPlayer.prepare();
                 mediaPlayer.start();
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -116,7 +111,7 @@ public class MP3Service extends Service {
 
     @Override
     public void onDestroy() {
-        if(mediaPlayer != null && mediaPlayer.isPlaying()) {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
@@ -129,14 +124,14 @@ public class MP3Service extends Service {
         return null;
     }
 
-    private void showCustomNotification(){
+    private void showCustomNotification() {
         mBuilder = createNotification();
 
-        remoteViews = new RemoteViews(getPackageName(),R.layout.notification_player);
-        remoteViews.setTextViewText(R.id.txt_title,filename);
+        remoteViews = new RemoteViews(getPackageName(), R.layout.notification_player);
+        remoteViews.setTextViewText(R.id.txt_title, filename);
         if (state == 1)
             remoteViews.setImageViewResource(R.id.btn_play_pause, R.drawable.pause);
-        else if(!mediaPlayer.isPlaying())
+        else if (!mediaPlayer.isPlaying())
             remoteViews.setImageViewResource(R.id.btn_play_pause, R.drawable.play);
         else
             remoteViews.setImageViewResource(R.id.btn_play_pause, R.drawable.pause);
@@ -149,19 +144,20 @@ public class MP3Service extends Service {
         mBuilder.setContent(remoteViews)
                 .setDefaults(Notification.DEFAULT_ALL);
 
+
         remoteViews.setOnClickPendingIntent(R.id.btn_play_pause, togglePlay);
         remoteViews.setOnClickPendingIntent(R.id.btn_close, close);
 
-        NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder.build().flags = Notification.FLAG_NO_CLEAR;
-        mNotificationManager.notify(1,mBuilder.build());
+        mNotificationManager.notify(1, mBuilder.build());
     }
 
     private NotificationCompat.Builder createNotification() {
         String channelId = "channel";
         String channelName = "Channel Name";
         notifManager
-                = (NotificationManager) getSystemService (Context.NOTIFICATION_SERVICE);
+                = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_HIGH;
