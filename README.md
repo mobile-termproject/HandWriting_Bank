@@ -1,4 +1,4 @@
-# Mobile_Term
+# HandWriting_Bank
 
 <b> android.permission.RECORD_AUDIO: </b>
  
