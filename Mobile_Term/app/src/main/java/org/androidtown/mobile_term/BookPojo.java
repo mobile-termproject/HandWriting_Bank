@@ -13,13 +13,7 @@ public class BookPojo {
         this.folder = folder;
     }
 
-    public int getPosi() {
-        return posi;
-    }
-
-    public void setPosi(int posi) {
-        this.posi = posi;
-    }
+    public void setPosi(int posi) {this.posi = posi;}
 
     public String getName() {
         return name;

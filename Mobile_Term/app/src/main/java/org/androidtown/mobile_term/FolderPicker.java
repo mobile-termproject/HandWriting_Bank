@@ -112,6 +112,7 @@ public class FolderPicker extends Activity {
                     FilePojo filePojo = new FilePojo(currentFile.getName(), true);
                     filePojo.setDay(simpleDateForma.format(lastModifiedDat));
                     filePojo.setSize(getFileCount(currentFile, 0) + "개");
+                    filePojo.setLocation(currentFile.getName());
                     foldersList.add(filePojo);
                 } else {
                     FilePojo filePojo = new FilePojo(currentFile.getName(), false);
@@ -177,7 +178,10 @@ public class FolderPicker extends Activity {
                     isVisible = true;
                     FolderAdapter.setIsVisible(isVisible);
                     FolderAdapter.notifyDataSetChanged();
-                    listClick(position);
+                    String a = "/" + folderAndFileList.get(position).getLocation() + "/";
+                    if (a.equals(folderName)) {
+                        Toast.makeText(getApplicationContext(), "동일한 폴더는 접근할 수 없습니다. ", Toast.LENGTH_LONG).show();
+                    } else listClick(position);
                 }
             });
             selectAll.setOnClickListener(new View.OnClickListener() {

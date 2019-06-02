@@ -49,9 +49,10 @@ public class BookAdapter extends ArrayAdapter<BookPojo> {
             imageView.setImageResource(R.drawable.txt);
         } else if (dataList.get(position).getName().contains("doc") || dataList.get(position).getName().contains("word") || dataList.get(position).getName().contains("hwp")) {
             imageView.setImageResource(R.drawable.doc);
-        } else if (dataList.get(position).getName().contains("jpg")) {
+        }else if (dataList.get(position).getName().contains("jpg")) {
             Glide.with(getContext()).load(dataList.get(position).getLocation() + "/" + dataList.get(position).getName()).into(imageView);
-        } else {
+        }
+        else {
             imageView.setImageResource(R.drawable.file);
         }
         if (dataList.get(position).getDay().contains("2019")) {

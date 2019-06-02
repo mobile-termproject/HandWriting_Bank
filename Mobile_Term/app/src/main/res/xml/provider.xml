@@ -8,7 +8,7 @@
         path="." /> <!--Context.getFilesDir() 내부 저장소-->
 
     <external-path
-        name="storage/emulated"
+        name="external_files"
         path="."/>  <!--  Environment.getExternalStorageDirectory() 외부 저장소-->
     <external-cache-path
         name="external-cache"

@@ -1,5 +1,6 @@
 package org.androidtown.mobile_term;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -8,11 +9,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -27,17 +32,13 @@ import androidx.core.content.FileProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author 가천대 소프트웨어학과 10조
@@ -47,6 +48,7 @@ import java.util.UUID;
  * @date 2019-05-04
  */
 public class FileList extends AppCompatActivity {
+    public static Activity _FileList;
 
     static boolean isRecording = false;
     static int filecounter = 0;
@@ -77,7 +79,7 @@ public class FileList extends AppCompatActivity {
     boolean pickFiles;
     Intent receivedIntent;
     String bookfolderName;
-
+    InputMethodManager imm;
     public final static int STATE_PREV = 0;     //녹음 시작 전
     public final static int STATE_RECORDING = 1;    //녹음 중
     public final static int STATE_PAUSE = 2;        // 일시 정지 중
@@ -89,11 +91,12 @@ public class FileList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_list);
+        _FileList = FileList.this;
+       imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
         try {
             setToolbar();
         } catch (IOException e) {
-            ;
         }
 
         if (!isExternalStorageReadable()) {
@@ -294,6 +297,17 @@ public class FileList extends AppCompatActivity {
                                 case R.id.pop_info:
                                     fileinfo(position);
                                     break;
+                                case R.id.pop_test:
+                                    if (folderAndFileList.get(position).getName().contains(".pdf")) {
+                                        Intent intent = new Intent(FileList.this, TestMake.class);
+                                        intent.putExtra("folder", bookfolderName);
+                                        intent.putExtra("filename", folderAndFileList.get(position).getName());
+                                        Log.i("정보", folderAndFileList.get(position).getName() + "fillist");
+                                        intent.putExtra("state", "false");
+                                        startActivity(intent);
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "가능한 파일이 아닙니다.", Toast.LENGTH_LONG).show();
+                                    }
                             }
                             return false;
                         }
@@ -364,10 +378,9 @@ public class FileList extends AppCompatActivity {
             intent.setDataAndType(uri,
                     "application/haansofthwp");
         }
-        //intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
             if (K == 0)
-
                 startActivity(intent);
         } catch (ActivityNotFoundException ex) {
             Toast.makeText(this, "기기에 파일을 열수 있는 어플이 없습니다.", Toast.LENGTH_SHORT).show();
@@ -428,24 +441,34 @@ public class FileList extends AppCompatActivity {
 
     /*순서대로 파일이름변경, 삭제, 공유, 상세정보*/
     public void namechange(final int position) {
-        AlertDialog.Builder ad = new AlertDialog.Builder(this);
-        ad.setTitle("파일 이름 변경");
-        // ad.setMessage("Message");   // 내용 설정
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         final EditText et = new EditText(this);
+        FrameLayout container = new FrameLayout(this);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = getResources().getDimensionPixelSize(R.dimen.dialog_margin);
+        params.rightMargin = getResources().getDimensionPixelSize(R.dimen.dialog_margin);
+        et.setLayoutParams(params);
+        container.addView(et);
         et.setText(folderAndFileList.get(position).getName());
-        et.setSelection(et.length() - 4);
-        ad.setView(et);
+        final AlertDialog.Builder ad = new AlertDialog.Builder(this);
+        ad.setTitle("파일 이름 변경");
+        ad.setView(container);
+        String a = et.getText().toString();
+        int num = a.lastIndexOf(".");
 
+        et.setSelection(0,num);
+        et.setCursorVisible(true);
+        et.requestFocus();
+        imm.showSoftInput(et, 0);
         ad.setPositiveButton("이름 변경", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String value = et.getText().toString();
-
                 File filePre = new File(location, folderAndFileList.get(position).getName());
                 File fileNow = new File(location, value);
-
                 filePre.renameTo(fileNow);
                 dialog.dismiss();
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
                 loadLists(location);
             }
         });
@@ -455,7 +478,8 @@ public class FileList extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
-        ad.show();
+        AlertDialog alertDialog = ad.create();
+        alertDialog.show();
     }
 
     public void filedelete(final int position) {
@@ -505,13 +529,16 @@ public class FileList extends AppCompatActivity {
 
     private void fileshare(int position) {
         Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-        //   intent.setAction(Intent.ACTION_SEND);
         intent.setType("application/*");
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID,
+        intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider",
                 new File(Environment.getExternalStorageDirectory().getAbsolutePath() + bookfolderName + folderAndFileList.get(position).getName())));
         Intent chooser = Intent.createChooser(intent, "공유하기");
         this.startActivity(chooser);
+    }
+
+    private void makeTest(int position) {
+
     }
 
     public void setToolbar() throws IOException {

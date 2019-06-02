@@ -36,5 +36,6 @@
     <item name="colorPrimaryDark">@color/ab_color</item>
     <item name="colorAccent">@color/ab_color</item>
     </style>
-
+    <style name="action" parent="Theme.AppCompat.Light.NoActionBar">
+    </style>
 </resources>

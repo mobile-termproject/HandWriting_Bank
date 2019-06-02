@@ -21,5 +21,4 @@ public class Convert {
         byte[] bytes = Base64.decode(bitmapString, Base64.NO_WRAP);
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
-
 }

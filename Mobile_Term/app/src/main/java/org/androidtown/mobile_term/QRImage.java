@@ -29,8 +29,8 @@ public class QRImage extends AppCompatActivity {
         Intent intent = getIntent();
         String qrnum = intent.getExtras().getString("Qr");
 
-        qrImage = (ImageView) findViewById(R.id.qrimage);
-        if (qrnum.length() > 0) {
+        qrImage = (ImageView)findViewById(R.id.qrimage);
+        if(qrnum.length() > 0) {
             WindowManager manager = (WindowManager) getSystemService(WINDOW_SERVICE);
             Display display = manager.getDefaultDisplay();
             Point point = new Point();

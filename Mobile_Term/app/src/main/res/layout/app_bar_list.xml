@@ -28,9 +28,9 @@
             <ImageButton
                 android:id="@+id/recordbtn"
                 android:src="@drawable/record"
-                android:backgroundTint="@color/white"
                 android:layout_width="60dp"
-                android:layout_height="65dp"
+                android:layout_height="60dp"
+                android:layout_margin="5dp"
                 android:scaleType="centerInside"/>
 
             <Spinner

@@ -20,4 +20,8 @@
         android:id="@+id/pop_info"
         android:title="상세정보"
         android:icon="@android:drawable/ic_menu_edit" />
+    <item
+        android:id="@+id/pop_test"
+        android:title="시험지 생성"
+        android:icon="@android:drawable/ic_menu_edit" />
 </menu>

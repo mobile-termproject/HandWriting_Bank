@@ -25,7 +25,6 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class Gachon_Login extends AppCompatActivity {
@@ -39,7 +38,7 @@ public class Gachon_Login extends AppCompatActivity {
     String loginPASS;
 
     int check = 0;
-    static ArrayList<String> arr = new ArrayList<String>();
+    ArrayList<String> arr = new ArrayList<String>();
 
     private FirebaseUser user;
     private FirebaseAuth mAuth; //Firebase로 로그인한 사용자 정보 알기 위해
@@ -54,10 +53,10 @@ public class Gachon_Login extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance(); // 인증
         user = mAuth.getCurrentUser(); //현재 로그인한 유저
 
-        logid = (EditText) findViewById(R.id.type_id);
-        logpass = (EditText) findViewById(R.id.type_password);
-        login = (Button) findViewById(R.id.loginBt);
-        cancel = (Button) findViewById(R.id.cancelBt);
+        logid = (EditText)findViewById(R.id.type_id);
+        logpass = (EditText)findViewById(R.id.type_password);
+        login = (Button)findViewById(R.id.loginBt);
+        cancel = (Button)findViewById(R.id.cancelBt);
 
 
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -80,51 +79,70 @@ public class Gachon_Login extends AppCompatActivity {
         });
     }
 
-    private class Description extends AsyncTask<Void, Void, Void> {
+    private class Description extends AsyncTask<Void,Void,Void> {
         private ProgressDialog progressDialog;
 
         @Override
-        protected void onPreExecute() {
+        protected  void onPreExecute() {
             super.onPreExecute();
+
+            progressDialog = new ProgressDialog(Gachon_Login.this);
+            Log.i("정보","1");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            Log.i("정보","2");
+            progressDialog.setMessage("잠시 기다려 주세요.");
+            Log.i("정보","3");
+            progressDialog.show();
+            Log.i("정보","4");
+            progressDialog.dismiss();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+            /*String tr = user.getEmail();
+            int get = tr.indexOf("@");
+            tr = tr.substring(0,get);
+            int pic_num = 0;*/
+
             try {
+                Log.i("정보","try1");
+                Log.i("정보",loginID +" "+ loginPASS);
                 Connection.Response res = Jsoup.connect("https://cyber.gachon.ac.kr/login.php")
-                        .data("username", loginID, "password", loginPASS)
+                        .data("username",loginID,"password",loginPASS)
                         .method(Connection.Method.POST)
                         .execute();
-
+                Log.i("정보",loginID +" "+ loginPASS);
                 Map<String, String> loginCookie = res.cookies();
-
-                Document doc = Jsoup.connect("https://cyber.gachon.ac.kr")
+                Log.i("정보",loginCookie+"");
+                Document doc = Jsoup.connect("http://cyber.gachon.ac.kr")
                         .cookies(loginCookie)
-                        .followRedirects(true)
                         .get();
-
                 Elements els = doc.select("div[class=course-title]");
+                Log.i("정보",els+"");
                 check = els.size();
 
-                for (Element elem : els) {
+                Intent myIntent = new Intent(Gachon_Login.this,select_course.class);
+
+                for(Element elem : els) {
                     String mytitle = elem.select("h3").text();
-                    arr.add(mytitle);
+                    arr.add(new String(mytitle));
                 }
 
-            } catch (IOException e) { //네트워크 혹은 홈페이지 오류
+                myIntent.putStringArrayListExtra("arr",arr);
+                startActivity(myIntent); //select_course
 
+            } catch (IOException e) { //네트워크 혹은 홈페이지 오류
+                //Toast.makeText(getApplicationContext(),"로그인 오류", Toast.LENGTH_SHORT).show();
             }
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result) {
-            if (check == 0)
-                Toast.makeText(getApplicationContext(), "ID/PW 오류 혹은 저장된 과목이 없음", Toast.LENGTH_SHORT).show();
-            else {
-                Intent myIntent = new Intent(Gachon_Login.this, select_course.class);
-                startActivity(myIntent); //select_course
-            }
+            if(check==0)
+                Toast.makeText(getApplicationContext(),"ID/PW 오류 혹은 저장된 과목이 없음", Toast.LENGTH_SHORT).show();
         }
+
     }
+
 }

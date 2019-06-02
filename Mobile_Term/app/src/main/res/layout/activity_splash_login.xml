@@ -11,48 +11,24 @@
         android:id="@+id/splash_ikon"
         android:layout_width="wrap_content"
         android:layout_height="200dp"
-        app:srcCompat="@drawable/splash_ikon"
+        app:srcCompat="@drawable/splash"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true">
 
-        <RelativeLayout
-            android:id="@+id/googleButton"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/googleLogin"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="구글 로그인" />
 
-            <com.google.android.gms.common.SignInButton
-                android:visibility="gone"
-                android:layout_gravity="center"
-                android:id="@+id/googleLogin"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="구글 로그인" />
 
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/ment"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/mentimg"
-                android:layout_gravity="center"
-                android:layout_width="350dp"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ment"/>
-
-        </RelativeLayout>
-
-    </FrameLayout>
+    </RelativeLayout>
 </RelativeLayout>

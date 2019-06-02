@@ -49,7 +49,7 @@ public class RecordService extends Service {
     NotificationCompat.Builder mBuilder;
     int State = 0;
     int Pause_state = 0;
-    /*날짜 셋팅*/
+/*날짜 셋팅*/
     long mNow;
     Date mDate;
     Context mContext;

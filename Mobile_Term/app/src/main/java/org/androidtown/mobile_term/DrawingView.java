@@ -1,5 +1,7 @@
 package org.androidtown.mobile_term;
 
+import java.util.ArrayList;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,10 +14,9 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-
-import java.util.ArrayList;
 
 
 public class DrawingView extends View {
@@ -120,8 +121,10 @@ public class DrawingView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
 
         mLayerBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        //if (PDFActivity.num == 0)
-        mLayerBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        if(PDFActivity.num == 0)
+            mLayerBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        else
+            mLayerBitmap = Bitmap.createScaledBitmap(Testing.bitmap,w,h,true);
         mLayerCanvas.setBitmap(mLayerBitmap);
 
         if (mOuterShape != null) {
@@ -142,17 +145,17 @@ public class DrawingView extends View {
         // NOTE: Without extra bitmap or layer.. but HW Acceleration does not support setMaskFilter which means
         // eraser has strong edges whilst drawing.
         // @see http://developer.android.com/guide/topics/graphics/hardware-accel.html#unsupported
-		/*
-		canvas.drawBitmap(mOuterShape, 0, 0, null);
-		canvas.saveLayer(null, mPaint, Canvas.FULL_COLOR_LAYER_SAVE_FLAG);
-		canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-		canvas.drawBitmap(mInnerShape, 0, 0, null);
-		canvas.saveLayer(null, mPaintSrcIn, Canvas.FULL_COLOR_LAYER_SAVE_FLAG);
-		canvas.drawBitmap(mBitmapDraw, 0, 0, null);
-		canvas.drawPath(mPath, mPaintDraw);
-		canvas.restore();
-		canvas.restore();
-		*/
+      /*
+      canvas.drawBitmap(mOuterShape, 0, 0, null);
+      canvas.saveLayer(null, mPaint, Canvas.FULL_COLOR_LAYER_SAVE_FLAG);
+      canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+      canvas.drawBitmap(mInnerShape, 0, 0, null);
+      canvas.saveLayer(null, mPaintSrcIn, Canvas.FULL_COLOR_LAYER_SAVE_FLAG);
+      canvas.drawBitmap(mBitmapDraw, 0, 0, null);
+      canvas.drawPath(mPath, mPaintDraw);
+      canvas.restore();
+      canvas.restore();
+      */
 
         // Clear software canvas
         mLayerCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
@@ -172,9 +175,10 @@ public class DrawingView extends View {
         // Draw masked image to view
         if (PDFActivity.num == 0) {
             canvas.drawBitmap(mLayerBitmap, 0, 0, null);
-        } else {
-            canvas.drawBitmap(PDFActivity.bitmap, 0, 0, null);
-            canvas.drawBitmap(mLayerBitmap, 0, 0, null);
+        }
+        else {
+            canvas.drawBitmap(PDFActivity.bitmap,0,0,null);
+            canvas.drawBitmap(mLayerBitmap,0,0,null);
         }
 
     }
