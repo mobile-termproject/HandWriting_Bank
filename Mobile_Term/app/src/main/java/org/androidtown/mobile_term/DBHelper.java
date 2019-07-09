@@ -16,9 +16,6 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // 새로운 테이블 생성
-        /* 이름은 MONEYBOOK이고, 자동으로 값이 증가하는 _id 정수형 기본키 컬럼과
-        item 문자열 컬럼, price 정수형 컬럼, create_at 문자열 컬럼으로 구성된 테이블을 생성.
-        db.execSQL("CREATE TABLE PDFWRITING (_id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, price INTEGER, create_at TEXT);");*/
         db.execSQL("CREATE TABLE PDFWRITING(_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, page INTEGER, picture TEXT, testing TEXT);");
     }
 
